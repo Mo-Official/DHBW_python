@@ -10,6 +10,7 @@ at some parts there should be dialogs and scenes.
 * <b>Required Mechanisms:</b>
 
 	* main menu
+	
 set setting, select mode, load save file and exit game
 
 	* save files
