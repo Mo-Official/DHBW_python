@@ -1,6 +1,7 @@
 
 * <b>story mode</b>
-the game should have a story mode with pre designed levels and a story connecting this levels.
+
+The game should have a story mode with pre designed levels and a story connecting this levels.
 at some parts there should be dialogs and scenes.
 
 
