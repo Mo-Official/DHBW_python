@@ -5,7 +5,7 @@ at some parts there should be dialogs and scenes.
 
 * Required Concepts:
 
-* * main menu
+  * main menu
 set setting, select mode, load save file and exit game
 
 ** save files
