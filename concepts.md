@@ -24,9 +24,9 @@ at some parts there should be dialogs and scenes.
 
 	* Required for the Platformer game
 		* collisions:
-		Player can shoot enemies to kill them
-		player shouldn't fall through normal platforms.
-		player should get hurt if they collide with enemies
+			Player can shoot enemies to kill them
+			player shouldn't fall through normal platforms.
+			player should get hurt if they collide with enemies
 
 		* Player movement (realistic sideways movement)
 		Side ways and dashing
