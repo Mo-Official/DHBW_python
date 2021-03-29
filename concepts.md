@@ -1,12 +1,12 @@
 
-* story mode
+* <b>story mode</b>
 the game should have a story mode with pre designed levels and a story connecting this levels.
 at some parts there should be dialogs and scenes.
 
 
 
 
-* <b>Required Concepts:
+* <b>Required Mechanisms:</b>
 
 	* main menu
 set setting, select mode, load save file and exit game
@@ -57,7 +57,7 @@ levels should be scrollable in the positive y-axis
 		* Dialog Boxes
 to show text to the player
 
-* Might get added later:
+* <b>Might get added later:</b>
 
 	* Creating a Score counter
 Player can collect coins and buy upgrades or unlock special dialogs between levels
