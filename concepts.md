@@ -1,83 +1,83 @@
 
-# story mode
+* story mode
 the game should have a story mode with pre designed levels and a story connecting this levels.
 at some parts there should be dialogs and scenes.
 
 
 
 
-# Required Concepts:
+* Required Concepts:
 
-## main menu
+** main menu
 set setting, select mode, load save file and exit game
 
-## save files
+** save files
 start the last level played and continue the story
 
-## double mechanism
+** double mechanism
 the game should have two mechanism.
 the level starts as a space shooter game, once the player finnished the level, the game switches to a platformer game
 
-## Required for the Platformer game
-### collisions:
+** Required for the Platformer game
+*** collisions:
 Player can shoot enemies to kill them
 player shouldn't fall through normal platforms.
 player should get hurt if they collide with enemies
 
-### Player movement (realistic sideways movement)
+*** Player movement (realistic sideways movement)
 Side ways and dashing
 
-### Jump mechanics
+*** Jump mechanics
 normal jump and double jump
 
-### Gravity and Friction
+*** Gravity and Friction
 Gravity can change depending on the level parameters
 friction can change depending on the platform parameter
 
-### Camera movement
+*** Camera movement
 levels should be scrollable in all diractions
 
-### “Game Over” Mechanic
+*** “Game Over” Mechanic
 When health reaches zero player dies and has to restart the level
 
-## required for the spaceshooter
+** required for the spaceshooter
 
-### collisions
+*** collisions
 Lose a level if collided with an enemy and enter a invulnerable state
 Spaceship can shoot enemies
 
-### Bosses
+*** Bosses
 Each Level in the story mode has to have a boss
 
-### Camera movement
+*** Camera movement
 levels should be scrollable in the positive y-axis
 
-## Required for both
+** Required for both
 
-### Dialog Boxes
+*** Dialog Boxes
 to show text to the player
 
-# Might get added later:
+* Might get added later:
 
-## Creating a Score counter
+** Creating a Score counter
 Player can collect coins and buy upgrades or unlock special dialogs between levels
 
 
-## Shop inbetween levels
+** Shop inbetween levels
 to buy health points, health potions or unlock dialogs
 
-## checkpoint system
+** checkpoint system
 so the player doesn't have to start from the beginning of the level
 
-## shooting mechanism
+** shooting mechanism
 player can shoot enemies with ammo
 
-## Random Platform movement
+** Random Platform movement
 Not very important
 
-## Random Level Generation
+** Random Level Generation
 No very important, as the story mode is the main focus
-## survival mode
+** survival mode
 maps are generated randomly and the player has to survive and collect points.
 levels should get harder with played time.
 
