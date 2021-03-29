@@ -1,11 +1,9 @@
 
 # story mode
 the game should have a story mode with pre designed levels and a story connecting this levels.
-at some parts there should be dialogs and scences.
+at some parts there should be dialogs and scenes.
 
-# survival mode
-maps are generated randomly and the player has to survive and collect points.
-levels should get harder with played time.
+
 
 
 # Required Concepts:
@@ -16,35 +14,54 @@ set setting, select mode, load save file and exit game
 ## save files
 start the last level played and continue the story
 
-## Collision Detection
+## double mechanism
+the game should have two mechanism.
+the level starts as a space shooter game, once the player finnished the level, the game switches to a platformer game
+
+## Required for the Platformer game
+### collisions:
+Player can shoot enemies to kill them
 player shouldn't fall through normal platforms.
 player should get hurt if they collide with enemies
-player should kill an enemy if the collide with their weak point
 
-## Player movement (realistic sideways movement)
+### Player movement (realistic sideways movement)
 Side ways and dashing
 
-## Jump mechanics
+### Jump mechanics
 normal jump and double jump
 
-## Gravity and Friction
+### Gravity and Friction
 Gravity can change depending on the level parameters
 friction can change depending on the platform parameter
 
-## Warpable screen movement
-idk what that is
+### Camera movement
+levels should be scrollable in all diractions
 
-## Scrolling the screen (creating an infinite height)
-Vertical and horizontal scrolling
+### “Game Over” Mechanic
+When health reaches zero player dies and has to restart the level
+
+## required for the spaceshooter
+
+### collisions
+Lose a level if collided with an enemy and enter a invulnerable state
+Spaceship can shoot enemies
+
+### Bosses
+Each Level in the story mode has to have a boss
+
+### Camera movement
+levels should be scrollable in the positive y-axis
+
+## Required for both
+
+### Dialog Boxes
+to show text to the player
+
+# Might get added later:
 
 ## Creating a Score counter
 Player can collect coins and buy upgrades or unlock special dialogs between levels
 
-## “Game Over” Mechanic
-When health reaches zero player dies and has to restart later
-
-
-# Might get added later:
 
 ## Shop inbetween levels
 to buy health points, health potions or unlock dialogs
@@ -60,3 +77,7 @@ Not very important
 
 ## Random Level Generation
 No very important, as the story mode is the main focus
+## survival mode
+maps are generated randomly and the player has to survive and collect points.
+levels should get harder with played time.
+
