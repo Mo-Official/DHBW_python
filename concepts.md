@@ -3,12 +3,9 @@
 the game should have a story mode with pre designed levels and a story connecting this levels.
 at some parts there should be dialogs and scenes.
 
-
-
-
 * Required Concepts:
 
-** main menu
+* * main menu
 set setting, select mode, load save file and exit game
 
 ** save files
