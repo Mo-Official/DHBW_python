@@ -7,8 +7,8 @@ game_path = os.path.dirname(__file__)
 assets_path = os.path.join(game_path, "assets")
 
 # window stats
-WIDTH = 1080
-HEIGHT = 800
+WIDTH = 1024
+HEIGHT = 640
 TITLE = "My Game"
 FPS = 30
 
@@ -26,8 +26,8 @@ CYAN = (224,255,255)
 # general stats
 PLAYER_HR_ACC = 10
 FRIC = 0.5
-GRAVITY = 10
-PLAYER_VR_ACC = -GRAVITY*5
+GRAVITY = 5
+PLAYER_VR_ACC = -40
 PLAYER_VR_SPEED_LIMIT = PLAYER_VR_ACC * 3
 
 
@@ -39,21 +39,21 @@ class Player(pygame.sprite.Sprite):
         self.image.set_colorkey(BLACK)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.radius = self.rect.width // 1.7
         # Span Coordinations
-        self.rect.center = (WIDTH//3, HEIGHT//3)
+        self.rect.center = (0,0)
         self.speedx = 0
         self.speedy = 0
         self.falling = True
         self.doubleJump = False
 
-    def update(self):
-        colliding = pygame.sprite.spritecollide(self, all_platforms, False, )
+    def move(self):
+        collisions = pygame.sprite.spritecollide(self, game_map.all_platforms, False)
         keyState = pygame.key.get_pressed()
-        if colliding:
+        if collisions:
             self.speedy = 0
-            self.falling = False
-            self.rect.bottom = colliding[0].rect.top+1 # +1 is needed otherwise the player keeps bouncing
+            if not game_map.unwalkable_platforms.has(collisions[0]):
+                self.falling = False
+                self.rect.bottom = collisions[0].rect.top+1 # +1 is needed otherwise the player keeps bouncing
             if keyState[pygame.K_SPACE]:
                 self.speedy += PLAYER_VR_ACC
         else:
@@ -63,26 +63,20 @@ class Player(pygame.sprite.Sprite):
             self.speedy += GRAVITY
 
         if keyState[pygame.K_a]:
-            self.speedx -= PLAYER_HR_ACC
+            self.speedx = -PLAYER_HR_ACC
 
         elif keyState[pygame.K_d]:
-            self.speedx += PLAYER_HR_ACC
+            self.speedx = PLAYER_HR_ACC
         else:
             self.speedx = 0
-        self.speedx *= FRIC
+
+        game_map.scroll["x"]=self.rect.x
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
-class Platform(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, color):
-        super().__init__()
-        self.image = pygame.Surface((TILE_SIZE,TILE_SIZE))
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-        #spawn coordinations
-        self.rect.left = x
-        self.rect.bottom = y
-
+    def update(self):
+        self.move()
+        
 
 # init game
 pygame.init()
@@ -94,52 +88,96 @@ clock = pygame.time.Clock()
 
 # manage sprites
 all_sprites = pygame.sprite.Group()
-all_platforms = pygame.sprite.Group()
 
 player = Player()
 all_sprites.add(player)
 
 # game map
+map_folder = os.path.join(game_path, "maps")
+
+class Platform(pygame.sprite.Sprite):
+    def __init__(self, x, y, color, TILE_SIZE):
+        super().__init__()
+        self.image = pygame.Surface(TILE_SIZE)
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        #spawn coordinations
+        self.rect.left = x
+        self.rect.bottom = y
+
+class Map():
+    def __init__(self, map_path):
+        self.map = self.load_map(map_path)
+        self.all_platforms = pygame.sprite.Group()
+        self.unwalkable_platforms = pygame.sprite.Group()
+        self.TILE_SIZE = (WIDTH//32, HEIGHT//20)
+        self.scroll = {"x":0,"y":0}
+
+    def load_map(self, mapName):
+        with open(os.path.join(map_folder, mapName), "r") as fh:
+            return fh.read().split("\n")
+    
+    def get_chunk(self, x,y):
+        pass
+
+    def clear_map(self):
+        for platform in self.all_platforms:
+            platform.kill()
 
 
-game_map = [
-    ["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-    ["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-    ["0","0","2","2","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-    ["0","0","1","1","0","0","0","0","0","0","0","0","2","2","2","0","0"],
-    ["0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","0","0"],
-    ["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-    ["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-    ["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-    ["0","0","0","0","0","0","0","0","0","0","0","0","0","0","2","2","0"],
-    ["2","2","2","2","2","2","0","0","0","0","2","2","2","2","1","1","0"],
-    ["1","1","1","1","1","1","0","2","2","0","1","1","1","1","1","1","0"],
-    ["1","1","1","1","1","1","0","1","1","0","1","1","1","1","1","1","2"],
-    ["1","1","1","1","1","1","0","0","0","0","1","1","1","1","1","1","1"],
-    ["1","1","1","1","1","1","0","0","0","0","1","1","1","1","1","1","1"],
-    ["1","1","1","1","1","1","0","0","0","0","1","1","1","1","1","1","1"],
-    ["1","1","1","1","1","1","0","0","0","0","1","1","1","1","1","1","1"],
-]
+    def render_chunk(self):
+        self.clear_map()
+        for y_pos, _ in enumerate(self.map):
+            for x_pos, x in enumerate(self.map[y_pos]):
+                if x == "0":
+                    pass
+                elif x == "1":
+                    platform = Platform(
+                        x=x_pos*self.TILE_SIZE[0]-self.scroll["x"],
+                        y=y_pos*self.TILE_SIZE[1]-self.scroll["y"],
+                        color=BROWN,
+                        TILE_SIZE=self.TILE_SIZE)
+                    self.unwalkable_platforms.add(platform)
+                    self.all_platforms.add(platform)
+                    all_sprites.add(platform)
+                elif x == "2":
+                    platform = Platform(
+                        x=x_pos*self.TILE_SIZE[0]-self.scroll["x"],
+                        y=y_pos*self.TILE_SIZE[1]-self.scroll["y"],
+                        color=GREEN,
+                        TILE_SIZE=self.TILE_SIZE)
+                    self.all_platforms.add(platform)
+                    all_sprites.add(platform)
+
+game_map = Map("test.txt")
+game_map.render_chunk()
+
+
+        
 
 
 # assets
-TILE_SIZE = 64
-for y_pos, y in enumerate(game_map):
-    for x_pos, x in enumerate(game_map[y_pos]):
-        if x == "0":
-            pass
-        elif x == "1":
-            platform = Platform(x_pos*TILE_SIZE,y_pos*TILE_SIZE,TILE_SIZE, BROWN)
-            all_sprites.add(platform)
-        elif x == "2":
-            platform = Platform(x_pos*TILE_SIZE,y_pos*TILE_SIZE,TILE_SIZE, GREEN)
-            all_platforms.add(platform)
-            all_sprites.add(platform)
 
 
 
-# game loop
+
+# flow control
 running = True
+platformerMode = True
+
+def switch_mode():
+    global platformerMode
+    if platformerMode:
+        platformerMode = False
+    else:
+        platformerMode = True
+    
+    for x in range(100):
+        clock.tick(FPS*100000000)
+        pygame.draw.circle(screen, BLACK, (WIDTH//2, HEIGHT//2),x)
+        print(x)
+
+
 while running:
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -148,18 +186,27 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            pass
+            # if event.key == pygame.K_s:
+            #   switch_mode()
 
-    # update logic
-    all_sprites.update()
-    if player.rect.top > HEIGHT:
-        running = False
+    
+    if platformerMode:
+            
+        # update logic
 
+        game_map.render_chunk()
+        all_sprites.update()
 
-    # render and draw
-    screen.fill(TESTCOLOR)
-    all_sprites.draw(screen)
-    pygame.draw.rect(screen, RED, player.rect)
-    # after drawing everythin
-    pygame.display.flip()
+            # render and draw
+        screen.fill(TESTCOLOR)
+        all_sprites.draw(screen)
+        # after drawing everythin
+        pygame.display.flip()
+    else:
+        #screen.fill(BLACK)
+        pygame.display.flip()
+
 
 pygame.quit()
