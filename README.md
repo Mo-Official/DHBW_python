@@ -1,6 +1,6 @@
 # DHBW_python (Still thinking of a name)
 
-This is a project for my python module in the university.
+This is a project required for my python course.
 
 ## Project Description:
 This will be a Sci-fi Spaceshooter/Platformer game developed in pygame, but more effort will be put into the Platformer part.
