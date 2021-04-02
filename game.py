@@ -177,7 +177,6 @@ def switch_mode():
         pygame.draw.circle(screen, BLACK, (WIDTH//2, HEIGHT//2),x)
         print(x)
 
-
 while running:
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -193,7 +192,7 @@ while running:
 
     
     if platformerMode:
-            
+        
         # update logic
 
         game_map.render_chunk()
