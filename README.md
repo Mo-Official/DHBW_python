@@ -16,8 +16,11 @@ But Endless mode has to higher priority because I have to get the functionality 
 I will be using following assets for the project.
 
 Player: https://opengameart.org/content/xeon-ultimate-smash-friends
+
 Mobs: https://opengameart.org/content/open-gunner-expansion-pack-1
+
 World: https://opengameart.org/content/2d-sci-fi-platformer-tileset-16x16
+
 
 I haven't looked into sound effects or the Spaceshooter assets yet.
 
