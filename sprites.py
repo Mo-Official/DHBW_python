@@ -26,11 +26,13 @@ class Player(pg.sprite.Sprite):
         # animation variables
         self.walking = False
         self.jumping = False
+        self.falling = False
         self.current_frame = 0
         self.last_update = 0
         # sprite variables
         self.load_images()
         self.image = self.standing_frames_r[0]
+        self.image.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
         # physics variables
         self.rect = self.image.get_rect()
         self.rect.midbottom = (WIDTH/2, HEIGHT/2)
@@ -75,14 +77,12 @@ class Player(pg.sprite.Sprite):
         self.jumping_frames_l = list(map(lambda x: pg.transform.flip(x,True,False),self.jumping_frames_r))
 
         # Set key colors
-        map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.standing_frames_l)
-        map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.standing_frames_r)
-        map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.walking_frames_l)
-        map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.walking_frames_r)
-        map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.jumping_frames_l)
-        map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.jumping_frames_r)
-        
-
+        list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.standing_frames_l))
+        list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.standing_frames_r))
+        list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.walking_frames_l))
+        list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.walking_frames_r))
+        list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.jumping_frames_l))
+        list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.jumping_frames_r))
 
     def update(self):
         self.animate()   
@@ -100,15 +100,22 @@ class Player(pg.sprite.Sprite):
         self.pos += self.vel + 0.5 * self.acc
         self.rect.midbottom = self.pos
 
-        # stats for the player
+        # Check if the player is walking
         if int(self.vel.x)==0:
             self.walking = False
         else:
             self.walking = True
+        
+        # Check if player is jumping of falling
         if int(self.vel.y)<0:
             self.jumping = True
+            self.falling = False
+        elif int(self.vel.y)>0:
+            self.jumping = False
+            self.falling = True
         else:
             self.jumping = False
+            self.falling = False
 
 
         # TEMP: Player stays inside the screen instead of scrolling
@@ -129,9 +136,17 @@ class Player(pg.sprite.Sprite):
     
     def animate(self):
         now = pg.time.get_ticks()
-        def show_animation(frame_list):
+        def show_continuous_animation(frame_list):
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(frame_list)
+            self.image = frame_list[self.current_frame]
+            bottom = self.rect.bottom
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+        
+        def show_linear_animation(frame_list):
+            self.last_update = now
+            self.current_frame = min(self.current_frame + 1, len(frame_list) -1)
             self.image = frame_list[self.current_frame]
             bottom = self.rect.bottom
             self.rect = self.image.get_rect()
@@ -139,26 +154,36 @@ class Player(pg.sprite.Sprite):
 
         # show idle animation
         if not self.jumping and not self.walking:
-            if now - self.last_update > 50:
+            if now - self.last_update > 100:
                 if self.vel.x>0:
-                    show_animation(self.standing_frames_r)
+                    show_continuous_animation(self.standing_frames_r)
                 elif self.vel.x<0:
-                    show_animation(self.standing_frames_l)
+                    show_continuous_animation(self.standing_frames_l)
         
-        # show walking animation
-        if self.walking:
-            if now - self.last_update > 50:
-                if self.vel.x>0:
-                    show_animation(self.walking_frames_r)
-                elif self.vel.x<0:
-                    show_animation(self.walking_frames_l)
-
+        # show jump animation
         if self.jumping:
             if now - self.last_update > 50:
                 if self.vel.x>0:
-                    show_animation(self.jumping_frames_r)
+                    show_linear_animation(self.jumping_frames_r[:6])
                 elif self.vel.x<0:
-                    show_animation(self.jumping_frames_l)
+                    show_linear_animation(self.jumping_frames_l[:6])
+
+        # show falling animation
+        elif self.falling:
+            if now - self.last_update > 50:
+                if self.vel.x>0:
+                    show_linear_animation(self.jumping_frames_r[6:8])
+                elif self.vel.x<0:
+                    show_linear_animation(self.jumping_frames_l[6:8])
+
+        # show walking animation
+        elif self.walking:
+            if now - self.last_update > 50:
+                if self.vel.x>0:
+                    show_continuous_animation(self.walking_frames_r)
+                elif self.vel.x<0:
+                    show_continuous_animation(self.walking_frames_l)
+
 
         
             
