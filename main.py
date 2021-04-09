@@ -19,7 +19,7 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        # load data
+        # load Highscore
         with open(HS_FILE, "r") as fh:
             try:
                 self.highscore = int(fh.read())
@@ -27,8 +27,8 @@ class Game:
                 self.highscore = 0
                 print("Can't load Highscore")
                 print(e)
-
-
+        # load Xeon Spritesheet
+        self.spritesheet = Spritesheet(XEON_SPRITESHEET)
 
     def new(self):
         # reset the game

@@ -4,6 +4,8 @@ import os
 GAME_PATH = os.path.dirname(__file__)
 ASSETS_PATH = os.path.join(GAME_PATH, "assets")
 HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
+XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with texture Packer
+
 
 # window stats
 TITLE = "My Title"
@@ -39,11 +41,11 @@ WHITE = (255,255,255)
 TESTCOLOR = (205,205,205)
 BLACK = (0,0,0)
 BLUE = (0,0,255)
-GREEN = (0,255,0)
+GREEN = (0, 228, 3)
 RED = (255,0,0)
 BROWN = (160,82,45)
 CYAN = (224,255,255)
 YELLOW = (255,255,0)
 LIGHTBLUE = (0, 155, 155)
 BG_COLOR = LIGHTBLUE
-
+XEON_SPRITESHEET_KEYCOLOR = GREEN

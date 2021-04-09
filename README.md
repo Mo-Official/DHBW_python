@@ -46,6 +46,12 @@ Here are some sound effects that I like for the game:
 * Space Bg Music: HitCtrl - https://opengameart.org/users/hitctrl
 * Sound Effects: SubspaceAudio - https://opengameart.org/users/subspaceaudio
 
+## Frameworks:
+* Tiled (For making levels): https://www.mapeditor.org/
+* Spritecutter (For formatting sprites): https://ezgif.com/sprite-cutter
+* Texture Packer (For formatting sprites): https://www.codeandweb.com/texturepacker
+* Pixlr (For sprite edits): https://pixlr.com/de/x/
+
 
 
 
