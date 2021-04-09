@@ -15,25 +15,25 @@ But Endless mode has to higher priority because I have to get the functionality 
 # Assets:
 I will be using following assets for the project.
 
-Player: https://opengameart.org/content/xeon-ultimate-smash-friends or https://opengameart.org/forumtopic/xeon-as-he-is-sprited
+* Player: https://opengameart.org/content/xeon-ultimate-smash-friends or https://opengameart.org/forumtopic/xeon-as-he-is-sprited
 
-Mobs: https://opengameart.org/content/open-gunner-expansion-pack-1
+* Mobs: https://opengameart.org/content/open-gunner-expansion-pack-1
 
-World: https://opengameart.org/content/2d-sci-fi-platformer-tileset-16x16
+* World: https://opengameart.org/content/2d-sci-fi-platformer-tileset-16x16
 
 Here are some sound effects that I like for the game: 
 
-Intro: https://opengameart.org/content/a-start-to-space
+* Intro: https://opengameart.org/content/a-start-to-space
 
-Outro: https://opengameart.org/content/death-is-just-another-path
+* Outro: https://opengameart.org/content/death-is-just-another-path
 
-Space Background: https://opengameart.org/content/drifting-through-the-nebula-ambient
+* Space Background: https://opengameart.org/content/drifting-through-the-nebula-ambient
 
-Background-platformer: https://opengameart.org/content/blackmist-ii
+* Background-platformer: https://opengameart.org/content/blackmist-ii
 
-Space-shooter-Background: https://opengameart.org/content/raining-bits
+* Space-shooter-Background: https://opengameart.org/content/raining-bits
 
-Sound-effects: https://opengameart.org/content/512-sound-effects-8-bit-style
+* Sound-effects: https://opengameart.org/content/512-sound-effects-8-bit-style
 
 ## Credits for the Assets:
 * Xeon (Player Sprite): Redshrike (Stephen Challener) - https://opengameart.org/users/redshrike
