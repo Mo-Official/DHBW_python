@@ -32,7 +32,6 @@ class Player(pg.sprite.Sprite):
         # sprite variables
         self.load_images()
         self.image = self.standing_frames_r[0]
-        self.image.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
         # physics variables
         self.rect = self.image.get_rect()
         self.rect.midbottom = (WIDTH/2, HEIGHT/2)
@@ -42,33 +41,39 @@ class Player(pg.sprite.Sprite):
         
 
     def load_images(self):
-        load = self.game.spritesheet.get_image
+        # Adjustments needed for the xeon spritesheet, beacuse it has too much padding
+        X_ADJUSTMENT = 24
+        Y_ADJUSTMENT = 20
+        WIDTH_ADJUSTMENT = -48
+        HEIGHT_ADJUSTMENT = -44
+        load = self.game.xeon_spritesheet.get_image
+
         self.standing_frames_r = [
-            load(96, 0, 96, 96)
+            load(96+X_ADJUSTMENT, 0+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT)
         ]
         self.walking_frames_r = [
-            load(0, 480, 96, 96),
-            load(96, 480, 96, 96),
-            load(192, 480, 96, 96),
-            load(288, 480, 96, 96),
-            load(384, 480, 96, 96),
-            load(0, 576, 96, 96),
-            load(96, 576, 96, 96),
-            load(192, 576, 96, 96),
-            load(288, 576, 96, 96),
-            load(384, 576, 96, 96),
+            load(0+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(96+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(192+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(288+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(384+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(0+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(96+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(192+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(288+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load(384+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
         ]
         self.jumping_frames_r = [
-                load(0, 96, 96, 96),
-                load(96, 96, 96, 96),
-                load(192, 96, 96, 96),
-                load(288, 96, 96, 96),
-                load(384, 96, 96, 96),
-                load(0, 192, 96, 96),
-                load(96, 192, 96, 96),
-                load(192, 192, 96, 96),
-                load(288, 192, 96, 96),
-                load(384, 192, 96, 96),
+                load(0+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(96+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(192+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(288+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(384+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(0+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(96+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(192+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(288+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load(384+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
         ]
 
         # flip all frames
@@ -116,22 +121,21 @@ class Player(pg.sprite.Sprite):
         else:
             self.jumping = False
             self.falling = False
-
-
-        # TEMP: Player stays inside the screen instead of scrolling
-        if self.pos.x > WIDTH:
-            self.pos.x = 0
-        if self.pos.x < 0:
-            self.pos.x = WIDTH
         
 
     def jump(self):
         # jump only if standing on a platform
-        self.rect.y += 1
+        # detect two pixels below the player
+        self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.y -= 1 
+        self.rect.y -= 2 
         if hits:
             self.vel.y = PLAYER_JUMP
+    
+    def jump_cut(self):
+        if self.jumping:
+            if self.vel.y < PLAYER_JUMP//2:
+                self.vel.y = PLAYER_JUMP//2
 
     
     def animate(self):

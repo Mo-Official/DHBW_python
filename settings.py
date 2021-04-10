@@ -3,8 +3,10 @@ import os
 # system stats
 GAME_PATH = os.path.dirname(__file__)
 ASSETS_PATH = os.path.join(GAME_PATH, "assets")
-HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
 XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with texture Packer
+HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
+SOUNDS_PATH = os.path.join(GAME_PATH, "snd")
+INTRO_SOUND_PATH = os.path.join(SOUNDS_PATH, "intro.ogg")
 
 
 # window stats

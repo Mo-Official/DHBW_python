@@ -28,7 +28,11 @@ class Game:
                 print("Can't load Highscore")
                 print(e)
         # load Xeon Spritesheet
-        self.spritesheet = Spritesheet(XEON_SPRITESHEET)
+        self.xeon_spritesheet = Spritesheet(XEON_SPRITESHEET)
+
+        # load sounds
+        self.intro_sound = pg.mixer.Sound(INTRO_SOUND_PATH)
+
 
     def new(self):
         # reset the game
@@ -71,37 +75,47 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
         
-        # Stop Player from falling when colliding with platform
-        hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+        # Stop Player from falling when colliding with platform 
+        hits = pg.sprite.spritecollide(self.player, self.platforms, False, )
         if hits:
-            if self.player.vel.y > 0: # if player is falling, set him above the platform
-                self.player.pos.y = hits[0].rect.top + 1
-            if self.player.vel.y < 0: # if the player is jumping (hit from below) the player should fall back
-                self.player.vel.y = 0
+            # check for the lowest platform
+            lowest = hits[0]
+            for hit in hits:
+                if hit.rect.bottom > lowest.rect.bottom:
+                    lowest = hit
+
+            # if player is falling, and his feet is about the platform set him above the platform
+            if self.player.vel.y > 0: 
+                if self.player.rect.bottom < lowest.rect.bottom:
+                    self.player.pos.y = lowest.rect.top + 1
+                    self.player.vel.y = 0
+
+            # if the player is jumping (hit from below) the player should fall back  
+            if self.player.vel.y < 0:      
                 self.player.pos.y += 10
-            self.player.vel.y = 0
+                self.player.vel.y = 0
         
         # Camera Scrolling:
         # if player reaches top 1/3 of screen scroll up
         if self.player.rect.top <= HEIGHT * 1/3:
-            self.player.pos.y += abs(self.player.vel.y)
+            self.player.pos.y += max(abs(self.player.vel.y), 2)
             for sprite in self.scorllable_sprites:
-                sprite.rect.y += abs(self.player.vel.y)
+                sprite.rect.y += max(abs(self.player.vel.y), 2)
         # if player reaches bottom 1/6 of screen scroll down
-        if self.player.pos.y >= HEIGHT * 5/6:
-            self.player.pos.y -= abs(self.player.vel.y)
+        if self.player.pos.y >= HEIGHT * 2/3:
+            self.player.pos.y -= max(abs(self.player.vel.y), -2)
             for sprite in self.scorllable_sprites:
-                sprite.rect.y -= abs(self.player.vel.y)
+                sprite.rect.y -= max(abs(self.player.vel.y), -2)
         # if player reaches right 1/3 of screen scroll right
         if self.player.pos.x >= WIDTH * 1/2:
-            self.player.pos.x -= abs(self.player.vel.x // 1)
+            self.player.pos.x -= max(abs(int(self.player.vel.x)), -2)
             for sprite in self.scorllable_sprites:
-                sprite.rect.x -= abs(self.player.vel.x // 1)
+                sprite.rect.x -= max(abs(int(self.player.vel.x)), -2)
         # if player reaches left 1/3 of screen scroll left
         if self.player.pos.x <= WIDTH * 1/2:
-            self.player.pos.x += abs(self.player.vel.x // 1)
+            self.player.pos.x += max(abs(int(self.player.vel.x)), 2)
             for sprite in self.scorllable_sprites:
-                sprite.rect.x += abs(self.player.vel.x // 1)
+                sprite.rect.x += max(abs(int(self.player.vel.x)), 2)
         
         # Player Coin Collecting
         coins = pg.sprite.spritecollide(self.player, self.coins, True)
@@ -121,12 +135,16 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE:
+                    self.player.jump_cut()
                     
     
     def draw(self):
         # Game Loop - Draw
         self.screen.fill(BG_COLOR)
         self.all_sprites.draw(self.screen)
+        self.screen.blit(self.player.image, self.player.rect)
         # Draw Player Score
         self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
         ## after everything ##
@@ -143,13 +161,15 @@ class Game:
 
     
     def show_start_screen(self):
+        self.intro_sound.play()
         self.screen.fill(BG_COLOR)
         self.draw_text(TITLE, 64, WHITE, WIDTH/2, HEIGHT/4)
         self.draw_text("A and D to move and Space to jump", 22, WHITE, WIDTH/2, HEIGHT/2)
         self.draw_text("Press a key to play", 22, WHITE, WIDTH/2, HEIGHT * 3/4)
         self.draw_text("High Score: " + str(self.highscore), 22, WHITE, WIDTH/2, HEIGHT * 3/4 + 100)
         pg.display.flip()
-        self.wait_for_key()        
+        self.wait_for_key()
+        self.intro_sound.fadeout(1000)
 
     def show_over_screen(self):
         if self.running:
