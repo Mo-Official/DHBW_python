@@ -12,6 +12,7 @@ LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx")
 
 SOUNDS_PATH = os.path.join(GAME_PATH, "snd")
 INTRO_SOUND_PATH = os.path.join(SOUNDS_PATH, "intro.ogg")
+PLATFORMER_BG_SOUND_PATH = os.path.join(SOUNDS_PATH, "platformer-bg.mp3")
 
 
 # window stats

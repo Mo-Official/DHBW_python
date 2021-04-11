@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="44" height="18" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
+<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="44" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="7" nextobjectid="85">
  <tileset firstgid="1" source="../assets/sci-fi-tileset.tsx"/>
  <layer id="1" name="Background" width="44" height="18">
   <data encoding="csv">
@@ -111,4 +111,31 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="6" name="platforms">
+  <object id="59" name="platform" x="192" y="128" width="2432" height="64"/>
+  <object id="60" name="platform" x="2624" y="192" width="64" height="448"/>
+  <object id="61" name="platform" x="2112" y="896" width="256" height="64"/>
+  <object id="62" name="platform" x="1728" y="832" width="128" height="64"/>
+  <object id="63" name="platform" x="1728" y="896" width="64" height="128"/>
+  <object id="64" name="platform" x="832" y="960" width="896" height="64"/>
+  <object id="65" name="platform" x="640" y="704" width="192" height="256"/>
+  <object id="66" name="platform" x="576" y="768" width="64" height="192"/>
+  <object id="67" name="platform" x="512" y="832" width="64" height="128"/>
+  <object id="68" name="platform" x="448" y="896" width="64" height="64"/>
+  <object id="69" name="platform" x="192" y="960" width="448" height="64"/>
+  <object id="70" name="platform" x="128" y="192" width="64" height="768"/>
+  <object id="71" name="platform" x="960" y="704" width="64" height="64"/>
+  <object id="72" name="platform" x="1152" y="704" width="128" height="64"/>
+  <object id="73" name="platform" x="1408" y="704" width="192" height="64"/>
+  <object id="74" name="platform" x="1856" y="448" width="256" height="64"/>
+  <object id="75" name="platform" x="1920" y="512" width="128" height="64"/>
+  <object id="76" name="platform" x="2176" y="576" width="192" height="64"/>
+  <object id="77" name="platform" x="2560" y="640" width="64" height="256"/>
+  <object id="79" name="platform" x="2496" y="704" width="64" height="192"/>
+  <object id="80" name="platform" x="2432" y="768" width="64" height="128"/>
+  <object id="81" name="platform" x="2368" y="832" width="64" height="64"/>
+  <object id="82" name="platform" x="1856" y="768" width="192" height="192"/>
+  <object id="83" name="platform" x="2048" y="832" width="64" height="128"/>
+  <object id="84" name="player" x="256" y="768" width="64" height="64"/>
+ </objectgroup>
 </map>

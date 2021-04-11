@@ -20,7 +20,7 @@ class Spritesheet:
         return image
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, game):
+    def __init__(self, game, x, y):
         super().__init__()
         self.game = game
         # animation variables
@@ -34,8 +34,8 @@ class Player(pg.sprite.Sprite):
         self.image = self.standing_frames_r[0]
         # physics variables
         self.rect = self.image.get_rect()
-        self.rect.midbottom = (WIDTH/2, HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT/2)
+        self.rect.midbottom = (x, y)
+        self.pos = vec(x, y)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         
@@ -208,5 +208,16 @@ class Platform(pg.sprite.Sprite):
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
+class TiledPlatform(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        super().__init__()
+        self.game = game
+        self.x = x
+        self.y = y
+        self.rect = pg.Rect(x,y,w,h)
         self.rect.x = x
         self.rect.y = y

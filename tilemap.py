@@ -30,20 +30,20 @@ class Camera:
         self.height = height
 
     def apply(self, entity):
-        return entity.rect.move(self.camera.topleft)
-    
-    def apply_rect(self, rect):
-        return rect.move(self.camera.topleft)
+        if isinstance(entity, pg.sprite.Sprite):
+            return entity.rect.move(self.camera.topleft)
+        elif isinstance(entity, pg.Rect):
+            return entity.move(self.camera.topleft)
     
     def update(self, target):
         x = -target.rect.x + PLAYER_POS[0]
         y = -target.rect.y + PLAYER_POS[1]
 
         # limit scrolling
-        #x = min(0, x) # left
-        #y = min(0, y) # top 
-        #x = max(-(self.width - WIDTH), x) # right
-        #y = max(-(self.height - HEIGHT), y) # buttom
+        x = min(0, x) # left
+        y = min(0, y) # top 
+        x = max(-(self.width - WIDTH), x) # right
+        y = max(-(self.height - HEIGHT), y) # buttom
 
         self.camera = pg.Rect(x, y, self.width, self.height)
 

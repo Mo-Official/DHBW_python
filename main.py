@@ -36,11 +36,11 @@ class Game:
         # load map
         self.map = TiledMap(LEVEL1_PATH)
         self.map_image = self.map.make_map()
-        self.map_image = pg.transform.scale(self.map_image, (WIDTH * 2, int(HEIGHT * 1.5)))
         self.map_rect = self.map_image.get_rect()
 
         # load sounds
         self.intro_sound = pg.mixer.Sound(INTRO_SOUND_PATH)
+        self.platformer_bg_sound = pg.mixer.Sound(PLATFORMER_BG_SOUND_PATH)
 
 
     def new(self):
@@ -66,9 +66,17 @@ class Game:
         # new camera
         self.camera = Camera(self.map.width, self.map.height)
 
+        # create tile objects
+        for tile_object in self.map.tmxdata.objects:
+            if tile_object.name == "player":
+                self.player = Player(self, tile_object.x, tile_object.y)
+                self.all_sprites.add(self.player)
+            if tile_object.name == "platform":
+                p = TiledPlatform(self, tile_object.x,tile_object.y, tile_object.width, tile_object.height)
+                self.platforms.add(p)
+
+
         # create player 
-        self.player = Player(self)
-        self.all_sprites.add(self.player)
         self.run()
         
         pass
@@ -76,12 +84,13 @@ class Game:
     def run(self):
         # Game Loop
         self.playing = True
+        self.platformer_bg_sound.play()
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
-        pass
+        self.platformer_bg_sound.fadeout(1000)
 
     def update(self):
         # Game Loop - Update
@@ -106,28 +115,6 @@ class Game:
             if self.player.vel.y < 0:      
                 self.player.pos.y += 10
                 self.player.vel.y = 0
-        
-        """        # Camera Scrolling:
-        # if player reaches top 1/3 of screen scroll up
-        if self.player.rect.top <= HEIGHT * 1/3:
-            self.player.pos.y += max(abs(self.player.vel.y), 2)
-            for sprite in self.scorllable_sprites:
-                sprite.rect.y += max(abs(self.player.vel.y), 2)
-        # if player reaches bottom 1/6 of screen scroll down
-        if self.player.pos.y >= HEIGHT * 2/3:
-            self.player.pos.y -= max(abs(self.player.vel.y), -2)
-            for sprite in self.scorllable_sprites:
-                sprite.rect.y -= max(abs(self.player.vel.y), -2)
-        # if player reaches right 1/3 of screen scroll right
-        if self.player.pos.x >= WIDTH * 1/2:
-            self.player.pos.x -= max(abs(int(self.player.vel.x)), -2)
-            for sprite in self.scorllable_sprites:
-                sprite.rect.x -= max(abs(int(self.player.vel.x)), -2)
-        # if player reaches left 1/3 of screen scroll left
-        if self.player.pos.x <= WIDTH * 1/2:
-            self.player.pos.x += max(abs(int(self.player.vel.x)), 2)
-            for sprite in self.scorllable_sprites:
-                sprite.rect.x += max(abs(int(self.player.vel.x)), 2)"""
         
         # New Camera Scrolling
         self.camera.update(self.player)
@@ -158,7 +145,7 @@ class Game:
     def draw(self):
         # Game Loop - Draw
         self.screen.fill(BG_COLOR)
-        self.screen.blit(self.map_image, self.camera.apply_rect(self.map_rect))
+        self.screen.blit(self.map_image, self.camera.apply(self.map_rect))
 
         #self.all_sprites.draw(self.screen)
         for sprite in self.all_sprites:
