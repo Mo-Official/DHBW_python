@@ -125,7 +125,7 @@ class Game:
             self.score += coins[0].value
 
         # Game Over:
-        if self.player.rect.bottom > HEIGHT:
+        if self.player.rect.bottom > self.camera.height:
             self.playing = False
 
     def events(self):
