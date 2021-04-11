@@ -2,7 +2,10 @@ import pygame as pg
 import random
 from settings import *
 from sprites import *
-import os 
+from tilemap import *
+import os
+
+
 
 
 class Game:
@@ -30,6 +33,12 @@ class Game:
         # load Xeon Spritesheet
         self.xeon_spritesheet = Spritesheet(XEON_SPRITESHEET)
 
+        # load map
+        self.map = TiledMap(LEVEL1_PATH)
+        self.map_image = self.map.make_map()
+        self.map_image = pg.transform.scale(self.map_image, (WIDTH * 2, int(HEIGHT * 1.5)))
+        self.map_rect = self.map_image.get_rect()
+
         # load sounds
         self.intro_sound = pg.mixer.Sound(INTRO_SOUND_PATH)
 
@@ -41,18 +50,21 @@ class Game:
         self.scorllable_sprites = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         # experimental platform
-        for plat in PLATFORM_LIST:
+        """for plat in PLATFORM_LIST:
             p = Platform(*plat)
             self.all_sprites.add(p)
             self.platforms.add(p)
-            self.scorllable_sprites.add(p)
+            self.scorllable_sprites.add(p)"""
 
         # experimental coins
-        for coin in COIN_LIST:
+        """for coin in COIN_LIST:
             c = Coin(*coin)
             self.coins.add(c)
             self.all_sprites.add(c)
-            self.scorllable_sprites.add(c)
+            self.scorllable_sprites.add(c)"""
+
+        # new camera
+        self.camera = Camera(self.map.width, self.map.height)
 
         # create player 
         self.player = Player(self)
@@ -95,7 +107,7 @@ class Game:
                 self.player.pos.y += 10
                 self.player.vel.y = 0
         
-        # Camera Scrolling:
+        """        # Camera Scrolling:
         # if player reaches top 1/3 of screen scroll up
         if self.player.rect.top <= HEIGHT * 1/3:
             self.player.pos.y += max(abs(self.player.vel.y), 2)
@@ -115,7 +127,10 @@ class Game:
         if self.player.pos.x <= WIDTH * 1/2:
             self.player.pos.x += max(abs(int(self.player.vel.x)), 2)
             for sprite in self.scorllable_sprites:
-                sprite.rect.x += max(abs(int(self.player.vel.x)), 2)
+                sprite.rect.x += max(abs(int(self.player.vel.x)), 2)"""
+        
+        # New Camera Scrolling
+        self.camera.update(self.player)
         
         # Player Coin Collecting
         coins = pg.sprite.spritecollide(self.player, self.coins, True)
@@ -143,8 +158,13 @@ class Game:
     def draw(self):
         # Game Loop - Draw
         self.screen.fill(BG_COLOR)
-        self.all_sprites.draw(self.screen)
-        self.screen.blit(self.player.image, self.player.rect)
+        self.screen.blit(self.map_image, self.camera.apply_rect(self.map_rect))
+
+        #self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+        self.screen.blit(self.player.image, self.camera.apply(self.player))
+        
         # Draw Player Score
         self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
         ## after everything ##
