@@ -33,6 +33,9 @@ class Game:
         # load Xeon Spritesheet
         self.xeon_spritesheet = Spritesheet(XEON_SPRITESHEET)
 
+        # load coin Spritesheet
+        self.coin_spritesheet = Spritesheet(COIN_SPRITESHEET)
+
         # load map
         self.map = TiledMap(LEVEL1_PATH)
         self.map_image = self.map.make_map()
@@ -74,6 +77,11 @@ class Game:
             if tile_object.name == "platform":
                 p = TiledPlatform(self, tile_object.x,tile_object.y, tile_object.width, tile_object.height)
                 self.platforms.add(p)
+            if tile_object.name == "coin":
+                c = Coin(self, tile_object.x, tile_object.y, tile_object.color)
+                self.all_sprites.add(c)
+                self.coins.add(c)
+
 
 
         # create player 
@@ -121,8 +129,8 @@ class Game:
         
         # Player Coin Collecting
         coins = pg.sprite.spritecollide(self.player, self.coins, True)
-        if coins:
-            self.score += coins[0].value
+        for coin in coins:
+            self.score += coin.value
 
         # Game Over:
         if self.player.rect.bottom > self.camera.height:

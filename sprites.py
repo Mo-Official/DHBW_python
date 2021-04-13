@@ -193,14 +193,36 @@ class Player(pg.sprite.Sprite):
             
 
 class Coin(pg.sprite.Sprite):
-    def __init__(self,x,y, value=50):
+    def __init__(self, game,x,y, color="green"):
         super().__init__()
-        self.value = value
-        self.image = pg.Surface((self.value//2,self.value//2))
-        self.image.fill(RED)
+        self.game = game
+        self.color = color
+        self.load_image()
         self.rect = self.image.get_rect()
-        self.rect.center= (x,y)
-        
+        self.rect.center = (x,y)
+        self.set_value()
+
+    def load_image(self):
+        load = self.game.coin_spritesheet.get_image
+        if self.color == "green":
+            self.image = load(0, 0, 64, 64)
+        if self.color == "blue":
+            self.image = load(64, 0, 64, 64)
+        if self.color == "yellow":
+            self.image = load(128, 0, 64, 64)
+        if self.color == "red":
+            self.image = load(192, 0, 64, 64)
+        self.image.set_colorkey(BLACK)
+
+    def set_value(self):
+        if self.color == "green":
+            self.value = 50
+        if self.color == "blue":
+            self.value = 100
+        if self.color == "yellow":
+            self.value = 200
+        if self.color == "red":
+            self.value = 500
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, x, y, w, h):

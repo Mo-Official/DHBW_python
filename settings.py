@@ -5,7 +5,8 @@ GAME_PATH = os.path.dirname(__file__)
 HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
 
 ASSETS_PATH = os.path.join(GAME_PATH, "assets")
-XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with texture Packer
+XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with Texture Packer
+COIN_SPRITESHEET = os.path.join(ASSETS_PATH, "coins_spritesheet.png") # made with Texture Packer
 
 MAP_PATH = os.path.join(GAME_PATH, "maps")
 LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx")
