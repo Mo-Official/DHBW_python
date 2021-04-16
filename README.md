@@ -39,7 +39,7 @@ Here are some sound effects that I like for the game:
 
 ## Credits for the Assets:
 * Xeon (Player Sprite): Redshrike (Stephen Challener) - https://opengameart.org/users/redshrike
-* Mobs: Master484 - (http://m484games.ucoz.com/)
+* Mobs: Master484 - (http://m484games.ucoz.com/) and (https://opengameart.org/users/master484)
 * Tileset: Rottingpixels - https://opengameart.org/users/rottingpixels
 * Intro Music: Centurion_of_war - https://opengameart.org/content/a-start-to-space
 * Outro Music: Otto Halmén - https://opengameart.org/users/otto-halm%C3%A9n
