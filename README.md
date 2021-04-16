@@ -21,6 +21,8 @@ I will be using following assets for the project.
 
 * World: https://opengameart.org/content/2d-sci-fi-platformer-tileset-16x16
 
+* Coins: https://opengameart.org/content/free-pixel-effects-pack
+
 Here are some sound effects that I like for the game: 
 
 * Intro: https://opengameart.org/content/a-start-to-space
