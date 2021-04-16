@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="44" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="9" nextobjectid="101">
+<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="44" height="18" tilewidth="64" tileheight="64" infinite="0" nextlayerid="9" nextobjectid="104">
  <tileset firstgid="1" source="../assets/sci-fi-tileset.tsx"/>
  <layer id="1" name="Background" width="44" height="18">
   <data encoding="csv">
@@ -138,10 +138,11 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="8" name="dangers" visible="0">
+ <objectgroup id="8" name="dangers">
   <object id="100" name="acid" x="832" y="848" width="896" height="112"/>
+  <object id="103" name="base_enemy" x="1536" y="576" width="64" height="64"/>
  </objectgroup>
- <objectgroup id="6" name="platforms" visible="0">
+ <objectgroup id="6" name="platforms">
   <object id="59" name="platform" x="192" y="128" width="2432" height="64"/>
   <object id="60" name="platform" x="2624" y="192" width="64" height="448"/>
   <object id="61" name="platform" x="2112" y="896" width="256" height="64"/>

@@ -42,6 +42,8 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         # abilities
+        self.health = PLAYER_HEALTH
+        self.taking_damage = False
         
 
     def load_images(self):
@@ -136,8 +138,7 @@ class Player(pg.sprite.Sprite):
         list(map(lambda x: x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR),self.jumping_shooting_frames_r))
         
     def update(self):
-        self.animate()   
-        self.acc = vec(0,PLAYER_GRAVITY)
+        self.animate()
         keyState = pg.key.get_pressed()
         # apply shooting
         if keyState[pg.K_k]:
@@ -149,8 +150,15 @@ class Player(pg.sprite.Sprite):
                 if pg.time.get_ticks() - self.last_shot > 300:
                     self.shooting = False
 
+        # control invulnerability
+        now = pg.time.get_ticks()
+        if self.taking_damage:
+            if now - self.last_damge > PLAYER_INVULNERABILITY:
+                self.taking_damage = False
+
 
         # apply movement
+        self.acc = vec(0,PLAYER_GRAVITY)
         if keyState[pg.K_a]:
             self.acc.x = -PLAYER_ACC
             self.facing_right = False
@@ -158,9 +166,8 @@ class Player(pg.sprite.Sprite):
             self.acc.x = PLAYER_ACC
             self.facing_right = True
 
-        # apply friction
+        # apply equation of motion
         self.acc.x += self.vel.x * PLAYER_FRICTION
-        # euqations of motion
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
         self.rect.midbottom = self.pos
@@ -195,6 +202,13 @@ class Player(pg.sprite.Sprite):
         projectile = Projectile(*shot_offset, *shot_vel)
         self.game.player_projectiles.add(projectile)
         self.game.all_sprites.add(projectile)
+
+    def take_damage(self, amount):
+        if not self.taking_damage:
+            self.taking_damage = True
+            self.health -= amount
+            self.last_damge = pg.time.get_ticks()
+        
 
     def jump(self):
         # jump only if standing on a platform
@@ -283,6 +297,14 @@ class Projectile(pg.sprite.Sprite):
 class BaseEnemy(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         super().__init__()
+        self.image = pg.Surface((50,100))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.pos = vec(x, y)
+        self.vel = vec(0,0)
+        self.acc = vec(0,0)
+        self.game = game
+        self.last_shot = pg.time.get_ticks()
 
     def move(self):
         """
@@ -306,13 +328,29 @@ class BaseEnemy(pg.sprite.Sprite):
         """
         Shot a projectile in a certain angle
         """
+        projectile = Projectile(*self.rect.midleft, *vec(-20, 0))
+        self.game.enemyprojectiles.add(projectile)
+        self.game.all_sprites.add(projectile)
         pass
+
+    def die(self):
+        self.kill()
 
     def update(self):
         """
         Applies gravity, animates and determine behavior towards the player
         """
-        pass
+        # apply equation of motion
+        self.acc = vec(0,PLAYER_GRAVITY)
+        self.acc.x += self.vel.x * PLAYER_FRICTION
+        self.vel += self.acc
+        self.pos += self.vel + 0.5 * self.acc
+        self.rect.midbottom = self.pos
+
+        now = pg.time.get_ticks()
+        if now - self.last_shot > 1000:
+            self.shot()
+            self.last_shot = pg.time.get_ticks()
 
 
 

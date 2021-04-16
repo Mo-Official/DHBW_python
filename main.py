@@ -50,12 +50,15 @@ class Game:
 
 
     def new(self):
-        # reset the game
+        # start the game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
-        self.scorllable_sprites = pg.sprite.Group()
+        self.all_physics_objects = pg.sprite.Group()
+        #self.scorllable_sprites = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.player_projectiles = pg.sprite.Group()
+        self.all_enemies = pg.sprite.Group()
+        self.enemyprojectiles = pg.sprite.Group()
         # experimental platform
         """for plat in PLATFORM_LIST:
             p = Platform(*plat)
@@ -78,6 +81,7 @@ class Game:
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
                 self.all_sprites.add(self.player)
+                self.all_physics_objects.add(self.player)
             if tile_object.name == "platform":
                 p = TiledPlatform(self, tile_object.x,tile_object.y, tile_object.width, tile_object.height)
                 self.platforms.add(p)
@@ -85,8 +89,11 @@ class Game:
                 c = HealthDrop(self, tile_object.x, tile_object.y)
                 self.all_sprites.add(c)
                 self.coins.add(c)
-
-
+            if tile_object.name == "base_enemy":
+                e = BaseEnemy(self, tile_object.x, tile_object.y)
+                self.all_sprites.add(e)
+                self.all_enemies.add(e)
+                self.all_physics_objects.add(e)
 
         # create player 
         self.run()
@@ -96,24 +103,24 @@ class Game:
     def run(self):
         # Game Loop
         self.playing = True
-       # self.platformer_bg_sound.play()
+        self.platformer_bg_sound.play()
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
-       # self.platformer_bg_sound.fadeout(1000)
+        self.platformer_bg_sound.fadeout(1000)
 
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
-        
+        """
         # Stop Player from falling when colliding with platform 
-        hits = pg.sprite.spritecollide(self.player, self.platforms, False, )
-        if hits:
+        platform_hits = pg.sprite.spritecollide(self.player, self.platforms, False, )
+        if platform_hits:
             # check for the lowest platform
-            lowest = hits[0]
-            for hit in hits:
+            lowest = platform_hits[0]
+            for hit in platform_hits:
                 if hit.rect.bottom > lowest.rect.bottom:
                     lowest = hit
 
@@ -127,17 +134,42 @@ class Game:
             if self.player.vel.y < 0:      
                 self.player.pos.y += 10
                 self.player.vel.y = 0
-        
+        """
+
+        # Platform collision for player and mobs
+        platform_hits = pg.sprite.groupcollide(self.platforms, self.all_physics_objects, False, False)
+        for platform in platform_hits.keys():
+            sprites = platform_hits.get(platform)
+            for sprite in sprites:
+                sprite.pos.y = platform.rect.top + 1
+                sprite.vel.y = 0
+            
+
+
         # New Camera Scrolling
         self.camera.update(self.player)
         
         # Player Coin Collecting
-        coins = pg.sprite.spritecollide(self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
-        for coin in coins:
+        coin_hits = pg.sprite.spritecollide(self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
+        for coin in coin_hits:
             self.score += 100
+
+        # Player getting shot
+        player_hits = pg.sprite.spritecollide(self.player, self.enemyprojectiles, True)
+        for hit in player_hits:
+            self.player.take_damage(10)
+
+        # Mobs getting shot
+        enemy_hits = pg.sprite.groupcollide(self.player_projectiles, self.all_enemies, True, False)
+        for hit in enemy_hits:
+            sprites = enemy_hits.get(hit)
+            for sprite in sprites:
+                sprite.kill()
 
         # Game Over:
         if self.player.rect.bottom > self.camera.height:
+            self.playing = False
+        if self.player.health < 0:
             self.playing = False
 
     def events(self):
@@ -149,8 +181,6 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
-
-                
 
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
@@ -198,7 +228,7 @@ class Game:
             self.kill_sprite_group(self.all_sprites)
             self.screen.fill(BG_COLOR)
             self.draw_text("Game Over", 64, WHITE, WIDTH/2, HEIGHT/4)
-            #self.draw_text(f"Your Score is {self.score}", 22, WHITE, WIDTH/2, HEIGHT/2)
+            self.draw_text(f"Your Score is {self.score}", 22, WHITE, WIDTH/2, HEIGHT/2)
             self.draw_text("Press a key to play again.", 22, WHITE, WIDTH/2, HEIGHT * 3/4)
             pg.display.flip()
             self.wait_for_key()   
