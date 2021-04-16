@@ -7,6 +7,8 @@ HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
 ASSETS_PATH = os.path.join(GAME_PATH, "assets")
 XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with Texture Packer
 COIN_SPRITESHEET = os.path.join(ASSETS_PATH, "coins_spritesheet.png") # made with Texture Packer
+HEALTHDROP_SPRITESHEET = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.png") # made with Texture Packer
+HEALTHDROP_XML_DATA = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.xml") # made with Texture Packer
 
 MAP_PATH = os.path.join(GAME_PATH, "maps")
 LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx")
@@ -17,7 +19,6 @@ PLATFORMER_BG_SOUND_PATH = os.path.join(SOUNDS_PATH, "platformer-bg.mp3")
 
 
 # window stats
-TITLE = "My Title"
 WIDTH = 1024
 HEIGHT = 800
 TITLE = "My Game"
@@ -57,5 +58,7 @@ BROWN = (160,82,45)
 CYAN = (224,255,255)
 YELLOW = (255,255,0)
 LIGHTBLUE = (0, 155, 155)
+PINK = (236,57,190)
 BG_COLOR = LIGHTBLUE
 XEON_SPRITESHEET_KEYCOLOR = GREEN
+COIN_SPRITESHEET_KEYCOLOR = PINK

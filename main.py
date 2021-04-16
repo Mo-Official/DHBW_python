@@ -1,9 +1,10 @@
 import pygame as pg
 import random
+import os
+import xml.etree.ElementTree as ET
 from settings import *
 from sprites import *
 from tilemap import *
-import os
 
 
 
@@ -35,6 +36,8 @@ class Game:
 
         # load coin Spritesheet
         self.coin_spritesheet = Spritesheet(COIN_SPRITESHEET)
+        self.healthdrop_spritesheet = Spritesheet(HEALTHDROP_SPRITESHEET)
+        self.healthdrop_xmldata = ET.parse(HEALTHDROP_XML_DATA)
 
         # load map
         self.map = TiledMap(LEVEL1_PATH)
@@ -52,6 +55,7 @@ class Game:
         self.platforms = pg.sprite.Group()
         self.scorllable_sprites = pg.sprite.Group()
         self.coins = pg.sprite.Group()
+        self.player_projectiles = pg.sprite.Group()
         # experimental platform
         """for plat in PLATFORM_LIST:
             p = Platform(*plat)
@@ -78,7 +82,7 @@ class Game:
                 p = TiledPlatform(self, tile_object.x,tile_object.y, tile_object.width, tile_object.height)
                 self.platforms.add(p)
             if tile_object.name == "coin":
-                c = Coin(self, tile_object.x, tile_object.y, tile_object.color)
+                c = HealthDrop(self, tile_object.x, tile_object.y)
                 self.all_sprites.add(c)
                 self.coins.add(c)
 
@@ -92,13 +96,13 @@ class Game:
     def run(self):
         # Game Loop
         self.playing = True
-        self.platformer_bg_sound.play()
+       # self.platformer_bg_sound.play()
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
-        self.platformer_bg_sound.fadeout(1000)
+       # self.platformer_bg_sound.fadeout(1000)
 
     def update(self):
         # Game Loop - Update
@@ -128,9 +132,9 @@ class Game:
         self.camera.update(self.player)
         
         # Player Coin Collecting
-        coins = pg.sprite.spritecollide(self.player, self.coins, True)
+        coins = pg.sprite.spritecollide(self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
         for coin in coins:
-            self.score += coin.value
+            self.score += 100
 
         # Game Over:
         if self.player.rect.bottom > self.camera.height:
@@ -145,6 +149,9 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
+
+                
+
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
                     self.player.jump_cut()
@@ -161,7 +168,7 @@ class Game:
         self.screen.blit(self.player.image, self.camera.apply(self.player))
         
         # Draw Player Score
-        self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
+        self.draw_text(str(self.score), 32, BLACK, WIDTH/2, 15)
         ## after everything ##
         pg.display.flip()
 
@@ -191,7 +198,7 @@ class Game:
             self.kill_sprite_group(self.all_sprites)
             self.screen.fill(BG_COLOR)
             self.draw_text("Game Over", 64, WHITE, WIDTH/2, HEIGHT/4)
-            self.draw_text(f"Your Score is {self.score}", 22, WHITE, WIDTH/2, HEIGHT/2)
+            #self.draw_text(f"Your Score is {self.score}", 22, WHITE, WIDTH/2, HEIGHT/2)
             self.draw_text("Press a key to play again.", 22, WHITE, WIDTH/2, HEIGHT * 3/4)
             pg.display.flip()
             self.wait_for_key()   
