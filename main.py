@@ -81,7 +81,6 @@ class Game:
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
                 self.all_sprites.add(self.player)
-                self.all_physics_objects.add(self.player)
             if tile_object.name == "platform":
                 p = TiledPlatform(self, tile_object.x,tile_object.y, tile_object.width, tile_object.height)
                 self.platforms.add(p)
@@ -114,7 +113,7 @@ class Game:
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
-        """
+        
         # Stop Player from falling when colliding with platform 
         platform_hits = pg.sprite.spritecollide(self.player, self.platforms, False, )
         if platform_hits:
@@ -134,9 +133,9 @@ class Game:
             if self.player.vel.y < 0:      
                 self.player.pos.y += 10
                 self.player.vel.y = 0
-        """
+        
 
-        # Platform collision for player and mobs
+        # Platform collision for mobs
         platform_hits = pg.sprite.groupcollide(self.platforms, self.all_physics_objects, False, False)
         for platform in platform_hits.keys():
             sprites = platform_hits.get(platform)
@@ -152,7 +151,7 @@ class Game:
         # Player Coin Collecting
         coin_hits = pg.sprite.spritecollide(self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
         for coin in coin_hits:
-            self.score += 100
+            self.player.health += 10
 
         # Player getting shot
         player_hits = pg.sprite.spritecollide(self.player, self.enemyprojectiles, True)
@@ -198,7 +197,11 @@ class Game:
         self.screen.blit(self.player.image, self.camera.apply(self.player))
         
         # Draw Player Score
-        self.draw_text(str(self.score), 32, BLACK, WIDTH/2, 15)
+        self.health_box = pg.Surface((300,50))
+        self.health_box.fill(BLACK)
+        self.screen.blit(self.health_box, (0, 0))
+        #self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
+        self.draw_text("Health: "+str(self.player.health)+"/100", 32, WHITE, 150, 15)
         ## after everything ##
         pg.display.flip()
 

@@ -297,7 +297,9 @@ class Projectile(pg.sprite.Sprite):
 class BaseEnemy(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         super().__init__()
-        self.image = pg.Surface((50,100))
+        self.image = pg.image.load(os.path.join(ASSETS_PATH, "enemy.png")).convert()
+        self.image = pg.transform.scale2x(self.image)
+        self.image.set_colorkey((77, 75, 118))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.pos = vec(x, y)
