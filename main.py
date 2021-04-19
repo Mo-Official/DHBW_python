@@ -1,3 +1,11 @@
+"""Main Game Script
+
+Attributes:
+    Name : MOUAZ TABBOUSH
+    DATE : 19.04.2020
+    
+
+"""
 import pygame as pg
 import random
 import os

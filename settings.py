@@ -1,3 +1,16 @@
+"""Settings
+
+This Script is where all the constants for the game are.
+
+The this script is imported
+
+    attributes:
+        name: MOUAZ TABBOUSH
+        date: 19.04.2020
+        version: 1.0
+
+"""
+
 import os
 
 # system stats
