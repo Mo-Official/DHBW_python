@@ -10,8 +10,70 @@ from tilemap import *
 
 
 class Game:
+    """
+    A base class to represent a game.
+    
+    ...
+    
+    Attributes
+    ----------
+    running : 
+    screen : 
+    clock : 
+    font_arial : 
+    score : 
+    highscore : 
+    xeon_spritesheet :
+    coin_spritesheet : 
+    healthdrop_spritesheet :
+    map :
+    map_image :
+    map_rect : 
+    intro_sound : 
+    platformer_bg_sound :
+    all_sprites : 
+    platforms : 
+    all_physics_objects : 
+    coins : 
+    player_projectiles :
+    all_enemies :
+    enemyprojectiles : 
+    camera :
+    player :
+    playering : 
+    running :
+    waiting :
+
+    Methods
+    -------
+    load_data()
+        Loads data
+    new()
+        create new game
+    run()
+        runs game loop
+    update()
+        updates game logic
+    events()
+        listens to player inputs
+    draw()
+        draws on screen
+    draw_text()
+        draws text on screen
+    show_start_screen()
+        shows start screen
+    show_over_screen()
+        shows over screen
+    wait_for_key()
+        stops game until a key is pressed
+    kill_sprite_group()
+        kills all sprites inside a group
+    quit()
+        quits game
+    
+    """
     def __init__(self):
-        # initialize game window
+        """__init__ methode of game class that starts pygame and loads data"""
         pg.init()
         pg.mixer.init()
         self.screen = pg.display.set_mode((WIDTH,HEIGHT))
@@ -23,6 +85,21 @@ class Game:
         self.load_data()
 
     def load_data(self):
+        """Loads all game data and assets.
+
+        Constants are loaded from settings.py
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        Rasises
+        -------
+        Exception
+            can't load highscore
+        """
         # load Highscore
         with open(HS_FILE, "r") as fh:
             try:
@@ -50,6 +127,7 @@ class Game:
 
 
     def new(self):
+        
         # start the game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()

@@ -1,3 +1,17 @@
+"""Sprites
+
+This script  does thsi and that
+
+any special cases
+
+any requirements
+
+The filed can be imported and contains the following classes:
+    * Spritesheet - a utility class for loading sprites
+    * Player
+    
+"""
+
 import pygame as pg
 import xml.etree.ElementTree as ET
 from settings import *
