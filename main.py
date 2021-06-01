@@ -1,81 +1,101 @@
-"""Main Game Script
-
-Attributes:
-    Name : MOUAZ TABBOUSH
-    DATE : 19.04.2020
-    
-
-"""
-import pygame as pg
-import random
 import os
 import xml.etree.ElementTree as ET
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
+import pygame as pg
 from settings import *
 from sprites import *
 from tilemap import *
 
+"""Main Game Script
+
+Author:
+    Name : MOUAZ TABBOUSH
+    Date : 19.04.2020
+
+File Description:
+    This is the main file for the game.
+    The Game class represents the whole loop for a pygame project.
+    Each element in a pygame project e.g main-loop, update section, render section, event loop
+    are neatly devided into methods that are run in the run method.
+
+File Content:
+    Classes:
+        * Game
+
+Dependancies:
+    * pygame
+    * random
+    * os
+    * xml.etree.ElementTree
+    * settings.py
+    * sprites.py
+    * tilemap.py
+
+Other:
+    * The template of this project and some code snippets are based on this tutorial:
+    https://www.youtube.com/watch?v=uWvb3QzA48c&list=PLsk-HSGFjnaG-BwZkuAOcVwWldfCLu1pq
+    * Camera movement is based on this tutorial:
+    https://www.youtube.com/watch?v=3UxnelT9aCo&list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i
+"""
 
 
 
 class Game:
     """
     A base class to represent a game.
-    
     ...
-    
     Attributes
     ----------
-    running : 
-    screen : 
-    clock : 
-    font_arial : 
-    score : 
-    highscore : 
-    xeon_spritesheet :
-    coin_spritesheet : 
-    healthdrop_spritesheet :
-    map :
-    map_image :
-    map_rect : 
-    intro_sound : 
-    platformer_bg_sound :
-    all_sprites : 
-    platforms : 
-    all_physics_objects : 
-    coins : 
-    player_projectiles :
-    all_enemies :
-    enemyprojectiles : 
-    camera :
-    player :
-    playering : 
-    running :
-    waiting :
+    screen : object -> the main pygame display
+    clock : object -> controls fps
+    font_arial : object -> holds the arial font
+    score : int -> holds player score (may be removed later)
+    highscore : int -> holds highscore
+    xeon_spritesheet : object -> holds images for xeon (Player Sprite)
+    coin_spritesheet : object -> holds images for collectable (depricated)
+    healthdrop_spritesheet : object -> holds images for collectables
+    map : object -> renders tile images on each 64x64 surface from the tmx map
+    map_image : object -> surface to hold the map image after calling map.render()
+    map_rect : object -> the rect of the map_image
+    intro_sound : object -> plays and stops the intro music
+    platformer_bg_sound : object -> plays and stops the level bg music
+    all_sprites : list -> list for the sprites. needed when applying an effect on all sprites
+    platforms : list -> list for platforms. needed when checking for collisions with player and mobs
+    all_physics_objects : list -> list for all objects that have gravity effect, excluds player
+    coins : list -> list for all collectable coins/healthdrops
+    player_projectiles : list -> list for all player projectiles.
+    all_enemies : list -> list of all enemies
+    enemy_projectiles : list -> list for all enemies projectiles.
+    camera : object -> a camera object that applies a setoff for all objects
+    player : object -> the player sprite.
+    playing : boolean -> checks whether the user is playing a level or is on the menu
+    running : boolean -> exits game if set to false 
+    waiting : boolean -> flow control variable. pauses the game when set to true
 
     Methods
     -------
     load_data()
-        Loads data
+        Loads all game data like highscore, spritesheets and music
     new()
-        create new game
+        runs the needed code when a game starts. runs code that only need to run once per round
     run()
-        runs game loop
+        controls game loop and calls update(), events(), draw()
     update()
         updates game logic
     events()
-        listens to player inputs
+        listens to player inputs and other events
     draw()
         draws on screen
     draw_text()
-        draws text on screen
+        utility method for drawing text on screen
     show_start_screen()
         shows start screen
     show_over_screen()
         shows over screen
     wait_for_key()
-        stops game until a key is pressed
+        pauses the game until a key is pressed
     kill_sprite_group()
-        kills all sprites inside a group
+        utility method for killing all sprites inside a group
     quit()
         quits game
     
@@ -99,10 +119,10 @@ class Game:
 
         Parameters
         ----------
-
+        none.
         Returns
         -------
-
+        none.
         Rasises
         -------
         Exception
@@ -135,7 +155,23 @@ class Game:
 
 
     def new(self):
-        
+        """runs code that starts a new gameplayer.
+        this method sets up the assets, enemies, player and coins before running the run() method
+
+        Constants needed are loaded from settings.py
+
+        Parameters
+        ----------
+        none.
+
+        Returns
+        -------
+        none.
+
+        Rasises
+        -------
+        none.
+        """
         # start the game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
@@ -144,20 +180,7 @@ class Game:
         self.coins = pg.sprite.Group()
         self.player_projectiles = pg.sprite.Group()
         self.all_enemies = pg.sprite.Group()
-        self.enemyprojectiles = pg.sprite.Group()
-        # experimental platform
-        """for plat in PLATFORM_LIST:
-            p = Platform(*plat)
-            self.all_sprites.add(p)
-            self.platforms.add(p)
-            self.scorllable_sprites.add(p)"""
-
-        # experimental coins
-        """for coin in COIN_LIST:
-            c = Coin(*coin)
-            self.coins.add(c)
-            self.all_sprites.add(c)
-            self.scorllable_sprites.add(c)"""
+        self.enemy_projectiles = pg.sprite.Group()
 
         # new camera
         self.camera = Camera(self.map.width, self.map.height)
@@ -186,9 +209,21 @@ class Game:
         pass
 
     def run(self):
+        """A simple function to control game loop
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         # Game Loop
         self.playing = True
-        self.platformer_bg_sound.play()
+        #self.platformer_bg_sound.play()
         while self.playing:
             self.clock.tick(FPS)
             self.events()
@@ -197,8 +232,30 @@ class Game:
         self.platformer_bg_sound.fadeout(1000)
 
     def update(self):
+        """ This method updates logic between game objects.
+        These are the mechanisms supported in this method:
+            * platform collisions with the player.
+            * platform collisions for the mobs
+            * camera scrolling
+            * player collision with enemy bullets
+            * enemies collision with player bullets
+            * player collecting coins
+            * player death by getting health below zero
+            * player fall off screen death
+
+        Parameters
+        ----------
+        none.
+        Returns 
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         # Game Loop - Update
         self.all_sprites.update()
+        
         
         # Stop Player from falling when colliding with platform 
         platform_hits = pg.sprite.spritecollide(self.player, self.platforms, False, )
@@ -240,8 +297,11 @@ class Game:
             self.player.health += 10
 
         # Player getting shot
-        player_hits = pg.sprite.spritecollide(self.player, self.enemyprojectiles, True)
-        for hit in player_hits:
+        # with directional push effect.
+        # fixme: add screenshake
+        player_hits = pg.sprite.spritecollide(self.player, self.enemy_projectiles, True)
+        if player_hits:
+            self.player.vel += player_hits[0].vel // 5
             self.player.take_damage(10)
 
         # Mobs getting shot
@@ -254,10 +314,26 @@ class Game:
         # Game Over:
         if self.player.rect.bottom > self.camera.height:
             self.playing = False
-        if self.player.health < 0:
+        if self.player.health < 10:
             self.playing = False
 
     def events(self):
+        """ Method for controlling the event loop.
+        the event that are handeled in this method are:
+        * clicking on the exit button to exit the game
+        * pressing the spacebar to jump
+        * releasing the spacebar to cut the jump
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         # Game Loop - Events
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -270,9 +346,21 @@ class Game:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
                     self.player.jump_cut()
-                    
     
     def draw(self):
+        """ Method for drawing graphics, 
+        applying the camera offset and showing the player health bar
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         # Game Loop - Draw
         self.screen.fill(BG_COLOR)
         self.screen.blit(self.map_image, self.camera.apply(self.map_rect))
@@ -288,21 +376,54 @@ class Game:
         self.screen.blit(self.health_box, (0, 0))
         #self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
         self.draw_text("Health: "+str(self.player.health)+"/100", 32, WHITE, 150, 15)
+
         ## after everything ##
         pg.display.flip()
 
-    def draw_text(self, text, size, color, x, y):
+    def draw_text(self, text: str, size: int, color: tuple, x: int, y: int, surface:pg.surface.Surface=None):
+        """A method that draws a text of a surface or the main screen
+
+        Parameters
+        ----------
+        text: string -> text to be drawn
+        size: int -> size of the text
+        color: tuple -> rgb color of the text
+        x: int -> x coordinate of the text
+        y: int -> y coordinate of the text
+        surface: pg.surface.Surface ->  (optional) draws a text on a surface.
+
+        Returns
+        -------
+        none.
+
+        Rasises
+        -------
+        none.
+
+        """
         font = pg.font.Font(self.font_arial, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x,y)
-        self.screen.blit(text_surface, text_rect)
-        
-        
+        if surface is None:
+            self.screen.blit(text_surface, text_rect)
+        else:
+            surface.blit(text_surface, text_rect)
 
-    
     def show_start_screen(self):
-        self.intro_sound.play()
+        """ method that describes how the start screen look like
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
+        #self.intro_sound.play()
         self.screen.fill(BG_COLOR)
         self.draw_text(TITLE, 64, WHITE, WIDTH/2, HEIGHT/4)
         self.draw_text("A and D to move and Space to jump", 22, WHITE, WIDTH/2, HEIGHT/2)
@@ -313,6 +434,18 @@ class Game:
         self.intro_sound.fadeout(1000)
 
     def show_over_screen(self):
+        """ Method for describing how the game over screen look like
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         if self.running:
             self.kill_sprite_group(self.all_sprites)
             self.screen.fill(BG_COLOR)
@@ -323,6 +456,18 @@ class Game:
             self.wait_for_key()   
 
     def wait_for_key(self):
+        """ method that pauses the game until a key is pressed
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         waiting = True
         while waiting:
             self.clock.tick(FPS)
@@ -334,12 +479,38 @@ class Game:
                 if event.type == pg.KEYUP:
                     waiting = False
 
-    def kill_sprite_group(self, group):
+    def kill_sprite_group(self, group: pg.sprite.Group):
+        """ Method that kills all sprites in a group.
+
+        Parameters
+        ----------
+        group: pg.sprite.Group -> group of sprites to be disposed of
+        
+        Returns
+        -------
+        none.
+        
+        Rasises
+        -------
+        none.
+        """
         # kill all sprites in a to improve performance 
         for sprite in group:
             sprite.kill()
 
     def quit(self):
+        """ Quits the game
+
+        Parameters
+        ----------
+        none.
+        Returns
+        -------
+        none.
+        Rasises
+        -------
+        none.
+        """
         # Close Game
         pg.quit()
 
