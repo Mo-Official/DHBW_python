@@ -25,6 +25,8 @@ HEALTHDROP_XML_DATA = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.xml") # 
 
 MAP_PATH = os.path.join(GAME_PATH, "maps")
 LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx")
+#LEVEL1_PATH = os.path.join(MAP_PATH, "first_level.tmx")
+
 
 SOUNDS_PATH = os.path.join(GAME_PATH, "snd")
 INTRO_SOUND_PATH = os.path.join(SOUNDS_PATH, "intro.ogg")
@@ -46,6 +48,7 @@ PLAYER_JUMP = -20
 PLAYER_POS = (int(WIDTH/2),(HEIGHT/2))
 PLAYER_HEALTH = 100
 PLAYER_INVULNERABILITY = 1000
+SHOT_KILL_DISTANCE = 500
 
 # Starting Platforms
 PLATFORM_LIST = [
