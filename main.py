@@ -104,13 +104,14 @@ class Game:
         """__init__ methode of game class that starts pygame and loads data"""
         pg.init()
         pg.mixer.init()
-        self.screen = pg.display.set_mode((WIDTH,HEIGHT))
+        self.screen: pg.Surface = pg.display.set_mode((WIDTH,HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.running = True
         self.font_arial = pg.font.match_font(FONT_ARIAL)
         self.score = 0
         self.load_data()
+        self.fps = FPS
 
     def load_data(self):
         """Loads all game data and assets.
@@ -120,9 +121,11 @@ class Game:
         Parameters
         ----------
         none.
+
         Returns
         -------
         none.
+        
         Rasises
         -------
         Exception
@@ -145,7 +148,7 @@ class Game:
         self.healthdrop_xmldata = ET.parse(HEALTHDROP_XML_DATA)
 
         # load map
-        self.map = TiledMap(LEVEL1_PATH)
+        self.map = TiledMap(LEVEL1_PATH) #TODO: PASS THE LEVEL LOADED IS A PARAM
         self.map_image = self.map.make_map()
         self.map_rect = self.map_image.get_rect()
 
@@ -225,72 +228,43 @@ class Game:
         self.playing = True
         #self.platformer_bg_sound.play()
         while self.playing:
-            self.clock.tick(FPS)
+            self.clock.tick(self.fps)
             self.events()
             self.update()
             self.draw()
         self.platformer_bg_sound.fadeout(1000)
 
     def update(self):
-        """ This method updates logic between game objects.
-        These are the mechanisms supported in this method:
-            * platform collisions with the player.
-            * platform collisions for the mobs
-            * camera scrolling
-            * player collision with enemy bullets
-            * enemies collision with player bullets
-            * player collecting coins
-            * player death by getting health below zero
-            * player fall off screen death
+        """Game.update
 
-        Parameters
-        ----------
-        none.
-        Returns 
-        -------
-        none.
-        Rasises
-        -------
-        none.
+            This method updates logic between game objects.
+            These are the mechanisms supported in this method:
+                * platform collisions with the player.
+                * platform collisions for the mobs
+                * camera scrolling
+                * player collision with enemy bullets
+                * enemies collision with player bullets
+                * player collecting coins
+                * player death by getting health below zero
+                * player fall off screen death
+
+            Parameters
+            ----------
+            none.
+            Returns 
+            -------
+            none.
+            Rasises
+            -------
+            none.
         """
         # Game Loop - Update
         self.all_sprites.update()
-        
-        
-        # Stop Player from falling when colliding with platform 
-        platform_hits = pg.sprite.spritecollide(self.player, self.platforms, False, )
-        if platform_hits:
-            # check for the lowest platform
-            lowest = platform_hits[0]
-            for hit in platform_hits:
-                if hit.rect.bottom > lowest.rect.bottom:
-                    lowest = hit
 
-            # if player is falling, and his feet is about the platform set him above the platform
-            if self.player.vel.y > 0: 
-                if self.player.rect.bottom < lowest.rect.bottom:
-                    self.player.pos.y = lowest.rect.top + 1
-                    self.player.vel.y = 0
-
-            # if the player is jumping (hit from below) the player should fall back  
-            if self.player.vel.y < 0:      
-                self.player.pos.y += 10
-                self.player.vel.y = 0
-        
-
-        # Platform collision for mobs
-        platform_hits = pg.sprite.groupcollide(self.platforms, self.all_physics_objects, False, False)
-        for platform in platform_hits.keys():
-            sprites = platform_hits.get(platform)
-            for sprite in sprites:
-                sprite.pos.y = platform.rect.top + 1
-                sprite.vel.y = 0
-            
 
 
         # New Camera Scrolling
         self.camera.update(self.player)
-        
         # Player Coin Collecting
         coin_hits = pg.sprite.spritecollide(self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
         for coin in coin_hits:
@@ -339,13 +313,14 @@ class Game:
             if event.type == pg.QUIT:
                 self.playing = False
                 self.running = False
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    self.player.jump()
-
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
                     self.player.jump_cut()
+                if event.key == pg.K_UP:
+                    self.fps +=1
+                if event.key == pg.K_DOWN:
+                    self.fps = abs(self.fps - 1) 
+
     
     def draw(self):
         """ Method for drawing graphics, 
@@ -365,15 +340,27 @@ class Game:
         self.screen.fill(BG_COLOR)
         self.screen.blit(self.map_image, self.camera.apply(self.map_rect))
 
-        #self.all_sprites.draw(self.screen)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+            # draw sptite outline
+            #self.screen.blit(self.get_outline(sprite.image), self.camera.apply(sprite))
+        
+
         self.screen.blit(self.player.image, self.camera.apply(self.player))
+        # draw player outline
+        #self.screen.blit(self.get_outline(self.player.image), self.camera.apply(self.player))
         
         # Draw Player Score
         self.health_box = pg.Surface((300,50))
         self.health_box.fill(BLACK)
         self.screen.blit(self.health_box, (0, 0))
+
+        # Draw fbs
+        self.fbs_box = pg.Surface((300,50))
+        self.fbs_box.fill(BLACK)
+        self.screen.blit(self.fbs_box, (0, 0))
+        self.draw_text("FPS: "+str(self.fps), 32, WHITE, 150, 30)
+
         #self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
         self.draw_text("Health: "+str(self.player.health)+"/100", 32, WHITE, 150, 15)
 
@@ -513,6 +500,20 @@ class Game:
         """
         # Close Game
         pg.quit()
+
+    # SOURCE: https://pastebin.com/XXRngMZh
+    def get_outline(self, image, color=RED):
+        """Returns an outlined image of the same size.  the image argument must
+        either be a convert surface with a set colorkey, or a convert_alpha
+        surface. color is the color which the outline will be drawn."""
+        rect = image.get_rect()
+        mask = pg.mask.from_surface(image)
+        outline = mask.outline()
+        outline_image = pg.Surface(rect.size).convert_alpha()
+        outline_image.fill((0,0,0,0))
+        for point in outline:
+            outline_image.set_at(point,color)
+        return outline_image
 
 
 
