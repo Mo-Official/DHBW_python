@@ -3,10 +3,12 @@ import xml.etree.ElementTree as ET
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame as pg
+from pygame import Surface
 
 from settings import *
 from sprites import *
 from tilemap import *
+from util import *
 
 """Main Game Script
 
@@ -112,6 +114,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.font_arial = pg.font.match_font(FONT_ARIAL)
+        self.font_arcade_in = FONT_ARCADE_IN
         self.score = 0
         self.load_data()
         self.fps = FPS
@@ -150,6 +153,9 @@ class Game:
         self.bullets_spritesheet = Spritesheet(BULLETS_SPRITESHEET)
         self.healthdrop_spritesheet = Spritesheet(HEALTHDROP_SPRITESHEET)
         self.healthdrop_xmldata = ET.parse(HEALTHDROP_XML_DATA)
+
+        # load menu background
+        self.main_menu_background = pg.image.load(os.path.join(ASSETS_PATH, "main_menu_background.png")).convert()
 
         # load map
         self.map = TiledMap(LEVEL1_PATH) #TODO: PASS THE LEVEL LOADED IS A PARAM
@@ -361,15 +367,12 @@ class Game:
         self.fbs_box = pg.Surface((300,50))
         self.fbs_box.fill(BLACK)
         self.screen.blit(self.fbs_box, (0, 0))
-        self.draw_text("FPS: "+str(self.fps), 32, WHITE, 150, 30)
-
-        #self.draw_text(str(self.score), 32, WHITE, WIDTH/2, 15)
-        self.draw_text("Health: "+str(self.player.health)+"/100", 32, WHITE, 150, 15)
+        self.draw_text("FPS: "+str(self.fps), 32, (WHITE,BLACK), 150, 30)
 
         ## after everything ##
         pg.display.flip()
 
-    def draw_text(self, text: str, size: int, color: tuple, x: int, y: int, surface:pg.surface.Surface=None):
+    def draw_text(self, text: str, size: int, color: Tuple[tuple,tuple], x: int, y: int, surface:pg.surface.Surface=None):
         """A method that draws a text of a surface or the main screen
 
         Parameters
@@ -390,14 +393,20 @@ class Game:
         none.
 
         """
-        font = pg.font.Font(self.font_arial, size)
-        text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (x,y)
+        font_in = pg.font.Font(FONT_ARCADE_IN, size)
+        font_out = pg.font.Font(FONT_ARCADE_OUT, size)
+        text_in_surface = font_in.render(text, True, color[0])
+        text_out_surface = font_out.render(text, True, color[1])
+        text_in_rect = text_in_surface.get_rect()
+        text_in_rect.midtop = (x,y)
+        text_out_rect = text_out_surface.get_rect()
+        text_out_rect.midtop = (x,y)
         if surface is None:
-            self.screen.blit(text_surface, text_rect)
+            self.screen.blit(text_in_surface, text_in_rect)
+            self.screen.blit(text_out_surface, text_out_rect)
         else:
-            surface.blit(text_surface, text_rect)
+            surface.blit(text_in_surface, text_in_rect)
+            surface.blit(text_out_surface, text_out_rect)
 
     def show_start_screen(self):
         """ method that describes how the start screen look like
@@ -413,11 +422,11 @@ class Game:
         none.
         """
         #self.intro_sound.play()
-        self.screen.fill(BG_COLOR)
-        self.draw_text(TITLE, 64, WHITE, WIDTH/2, HEIGHT/4)
-        self.draw_text("A and D to move and Space to jump", 22, WHITE, WIDTH/2, HEIGHT/2)
-        self.draw_text("Press a key to play", 22, WHITE, WIDTH/2, HEIGHT * 3/4)
-        self.draw_text("High Score: " + str(self.highscore), 22, WHITE, WIDTH/2, HEIGHT * 3/4 + 100)
+        screen_surface = Surface((WIDTH, HEIGHT))
+        screen_surface.blit(self.main_menu_background, self.main_menu_background.get_rect())
+        self.screen.blit(screen_surface, screen_surface.get_rect())
+
+        self.draw_text("Press a key to play", 64, (RED,BLACK), WIDTH/2, HEIGHT * 3/4)
         pg.display.flip()
         self.wait_for_key()
         self.intro_sound.fadeout(1000)
@@ -438,9 +447,9 @@ class Game:
         if self.running:
             self.kill_sprite_group(self.all_sprites)
             self.screen.fill(BG_COLOR)
-            self.draw_text("Game Over", 64, WHITE, WIDTH/2, HEIGHT/4)
-            self.draw_text(f"Your Score is {self.score}", 22, WHITE, WIDTH/2, HEIGHT/2)
-            self.draw_text("Press a key to play again.", 22, WHITE, WIDTH/2, HEIGHT * 3/4)
+            self.draw_text("Game Over", 64, (WHITE,BLACK), WIDTH/2, HEIGHT/4)
+            self.draw_text(f"Your Score is {self.score}", 22, (WHITE,BLACK), WIDTH/2, HEIGHT/2)
+            self.draw_text("Press a key to play again.", 22, (WHITE,BLACK), WIDTH/2, HEIGHT * 3/4)
             pg.display.flip()
             self.wait_for_key()   
 

@@ -39,7 +39,13 @@ WIDTH = 1024
 HEIGHT = 800
 TITLE = "My Game"
 FPS = 60
+
+# TODO: User 8-bit-arcade font
+
 FONT_ARIAL = "arial"
+FONT_PATH = os.path.join(GAME_PATH, "fonts")
+FONT_ARCADE_IN = os.path.join(FONT_PATH, "8-bit Arcade In.ttf")
+FONT_ARCADE_OUT = os.path.join(FONT_PATH, "8-bit Arcade Out.ttf")
 
 # Player properties
 PLAYER_ACC = 1
