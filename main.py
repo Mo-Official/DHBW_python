@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame as pg
-from pygame import Surface
+from pygame import Surface, encode_string
 
 from settings import *
 from sprites import *
@@ -393,20 +393,36 @@ class Game:
         none.
 
         """
+        # get the two arcade fonts
         font_in = pg.font.Font(FONT_ARCADE_IN, size)
         font_out = pg.font.Font(FONT_ARCADE_OUT, size)
-        text_in_surface = font_in.render(text, True, color[0])
-        text_out_surface = font_out.render(text, True, color[1])
-        text_in_rect = text_in_surface.get_rect()
-        text_in_rect.midtop = (x,y)
-        text_out_rect = text_out_surface.get_rect()
-        text_out_rect.midtop = (x,y)
+
+        # render them to get two surfaces
+        text_in_surface: Surface = font_in.render(text, True, color[0])
+        text_out_surface: Surface  = font_out.render(text, True, color[1])
+        text_in_rect: Rect = text_in_surface.get_rect()
+        text_out_rect: Rect = text_out_surface.get_rect()
+        text_in_rect.topleft = (0,0)
+        text_out_rect.topleft = (0,0)
+
+        # create a final surface and blit the two surfaces on it
+        text_surface = Surface(text_in_surface.get_size())
+        text_surface.blit(text_in_surface, text_in_rect)
+        text_surface.blit(text_out_surface, text_out_rect)
+
+        # change position to match given x and y
+        text_surface_rect = text_surface.get_rect()
+        text_surface_rect.x = x
+        text_surface_rect.y = y
+
+        # blit on the given surface if any are provided
         if surface is None:
-            self.screen.blit(text_in_surface, text_in_rect)
-            self.screen.blit(text_out_surface, text_out_rect)
+            self.screen.blit(text_surface, text_surface_rect)
         else:
-            surface.blit(text_in_surface, text_in_rect)
-            surface.blit(text_out_surface, text_out_rect)
+            surface.blit(text_surface, text_surface_rect)
+
+        # return the text_surface so you dont have to draw it again.
+        return text_surface, text_surface_rect
 
     def show_start_screen(self):
         """ method that describes how the start screen look like
@@ -422,14 +438,65 @@ class Game:
         none.
         """
         #self.intro_sound.play()
-        screen_surface = Surface((WIDTH, HEIGHT))
-        screen_surface.blit(self.main_menu_background, self.main_menu_background.get_rect())
-        self.screen.blit(screen_surface, screen_surface.get_rect())
+        self.screen.blit(self.main_menu_background, self.main_menu_background.get_rect())
 
         self.draw_text("Press a key to play", 64, (RED,BLACK), WIDTH/2, HEIGHT * 3/4)
         pg.display.flip()
         self.wait_for_key()
         self.intro_sound.fadeout(1000)
+        self.show_start_text()
+
+    def show_start_text(self):
+        text = """
+        Year 2023. Sep. 21
+        Human scientists finally invented
+        the means for space exploration.
+        One Scientist known as Alfred Baker
+
+        Year 2034. Oct. 31
+
+        Year 2171. Oct. 31
+
+        Year 2171. Oct. 31
+
+        Year 2171. Oct. 31
+
+        Year 2171. Oct. 31
+
+        Year 2171. Oct. 31
+        """
+        self.screen.fill(BLACK)
+        complete_surface = Surface((WIDTH*2//3, HEIGHT*3))
+        text_lines = []
+        for index, line in enumerate(text.splitlines()):
+            line = encode_string(line.strip(), "utf-8")
+            text_surface, text_surface_rect = self.draw_text(line, 32, (WHITE,BLACK), x=0,y=32*index, surface=complete_surface)
+            text_lines.append((text_surface, text_surface_rect))
+
+    
+        complete_surface_rect = complete_surface.get_rect()
+        complete_surface_rect.topleft = (WIDTH//6,HEIGHT)
+
+        print("STARTED")
+        waiting = True
+        while waiting and complete_surface_rect.bottom > 0: # while the bot of the text surface has not reached the top of screen
+            # scroll text up
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                if event.type == pg.KEYUP:
+                    waiting = False
+
+            self.clock.tick(60)
+            complete_surface_rect.y -=1
+            complete_surface.blits(text_lines,False)
+            self.screen.blit(complete_surface, complete_surface_rect)
+            pg.display.flip()
+            print("LOOPED")
+        print("FINNISHED")
+
+
 
     def show_over_screen(self):
         """ Method for describing how the game over screen look like
