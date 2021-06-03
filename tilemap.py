@@ -36,8 +36,8 @@ class Camera:
             return entity.move(self.camera.topleft)
     
     def update(self, target):
-        x = -target.rect.x + PLAYER_POS[0]
-        y = -target.rect.y + PLAYER_POS[1]
+        x = -target.rect.x + CAM_POINT[0]
+        y = -target.rect.y + CAM_POINT[1]
 
         # limit scrolling
         x = min(0, x) # left

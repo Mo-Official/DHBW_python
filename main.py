@@ -1,7 +1,9 @@
 import os
 import xml.etree.ElementTree as ET
+
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame as pg
+
 from settings import *
 from sprites import *
 from tilemap import *
@@ -43,7 +45,8 @@ Other:
 class Game:
     """
     A base class to represent a game.
-    ...
+
+
     Attributes
     ----------
     screen : object -> the main pygame display
@@ -144,6 +147,7 @@ class Game:
 
         # load coin Spritesheet
         self.coin_spritesheet = Spritesheet(COIN_SPRITESHEET)
+        self.bullets_spritesheet = Spritesheet(BULLETS_SPRITESHEET)
         self.healthdrop_spritesheet = Spritesheet(HEALTHDROP_SPRITESHEET)
         self.healthdrop_xmldata = ET.parse(HEALTHDROP_XML_DATA)
 
@@ -313,13 +317,12 @@ class Game:
             if event.type == pg.QUIT:
                 self.playing = False
                 self.running = False
+            
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
                     self.player.jump_cut()
-                if event.key == pg.K_UP:
-                    self.fps +=1
-                if event.key == pg.K_DOWN:
-                    self.fps = abs(self.fps - 1) 
+                if event.key == pg.K_k:
+                    self.player.shooting_locked = False
 
     
     def draw(self):
@@ -344,8 +347,7 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             # draw sptite outline
             #self.screen.blit(self.get_outline(sprite.image), self.camera.apply(sprite))
-        
-
+            
         self.screen.blit(self.player.image, self.camera.apply(self.player))
         # draw player outline
         #self.screen.blit(self.get_outline(self.player.image), self.camera.apply(self.player))
@@ -441,6 +443,7 @@ class Game:
             self.draw_text("Press a key to play again.", 22, WHITE, WIDTH/2, HEIGHT * 3/4)
             pg.display.flip()
             self.wait_for_key()   
+
 
     def wait_for_key(self):
         """ method that pauses the game until a key is pressed

@@ -21,6 +21,7 @@ ASSETS_PATH = os.path.join(GAME_PATH, "assets")
 XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with Texture Packer
 COIN_SPRITESHEET = os.path.join(ASSETS_PATH, "coins_spritesheet.png") # made with Texture Packer
 HEALTHDROP_SPRITESHEET = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.png") # made with Texture Packer
+BULLETS_SPRITESHEET = os.path.join(ASSETS_PATH, "bullets_normal.png") # made with Texture Packer
 HEALTHDROP_XML_DATA = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.xml") # made with Texture Packer
 
 MAP_PATH = os.path.join(GAME_PATH, "maps")
@@ -48,7 +49,8 @@ PLAYER_JUMP = -20
 CAM_POINT = (int(WIDTH/2),(HEIGHT/2))
 PLAYER_HEALTH = 100
 PLAYER_INVULNERABILITY = 1000
-SHOT_KILL_DISTANCE = 500
+SHOT_KILL_DISTANCE = 600
+SHOOT_COOLDOWN = 400
 
 # Starting Platforms
 PLATFORM_LIST = [
