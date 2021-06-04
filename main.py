@@ -1,81 +1,64 @@
-import os
-import xml.etree.ElementTree as ET
-
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame as pg
-from pygame import Surface, encode_string
+from pygame import Surface, time, mixer, sprite
 
 from settings import *
 from sprites import *
 from tilemap import *
 from util import *
 
-"""Main Game Script
+__doc__ = """
+    Author: Mouaz Tabboush
 
-Author:
-    Name : MOUAZ TABBOUSH
-    Date : 19.04.2020
+    main - the main module for the game
+    ===================================
 
-File Description:
-    This is the main file for the game.
-    The Game class represents the whole loop for a pygame project.
-    Each element in a pygame project e.g main-loop, update section, render section, event loop
-    are neatly devided into methods that are run in the run method.
+    **main** is the main module for running the game containing a the Game class which saves all game attributes inside one object.
+    the Game class has a **run** methods which calls runs the main game loop.
 
-File Content:
-    Classes:
-        * Game
+    main only contains one class as a wrapper for the game loop.
 
-Dependancies:
+
+
+    Requirements
+    ============
+
     * pygame
-    * random
     * os
     * xml.etree.ElementTree
-    * settings.py
-    * sprites.py
-    * tilemap.py
+    * settings
+    * sprites
+    * tilemap
+    * util
 
-Other:
+
+    Other Info
+    ===================================
+
     * The template of this project and some code snippets are based on this tutorial:
     https://www.youtube.com/watch?v=uWvb3QzA48c&list=PLsk-HSGFjnaG-BwZkuAOcVwWldfCLu1pq
+
     * Camera movement is based on this tutorial:
     https://www.youtube.com/watch?v=3UxnelT9aCo&list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i
+
+    * Please refer to readme.md for credits of the game assets
 """
 
+import os
+import xml.etree.ElementTree as ET
+
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 
 class Game:
     """
+    Description
+    -----------
     A base class to represent a game.
-
+    This class is **only** meant as a wrapper for the game.
+    you should **not** create more that one instance of this class
 
     Attributes
     ----------
-    screen : object -> the main pygame display
-    clock : object -> controls fps
-    font_arial : object -> holds the arial font
-    score : int -> holds player score (may be removed later)
-    highscore : int -> holds highscore
-    xeon_spritesheet : object -> holds images for xeon (Player Sprite)
-    coin_spritesheet : object -> holds images for collectable (depricated)
-    healthdrop_spritesheet : object -> holds images for collectables
-    map : object -> renders tile images on each 64x64 surface from the tmx map
-    map_image : object -> surface to hold the map image after calling map.render()
-    map_rect : object -> the rect of the map_image
-    intro_sound : object -> plays and stops the intro music
-    platformer_bg_sound : object -> plays and stops the level bg music
-    all_sprites : list -> list for the sprites. needed when applying an effect on all sprites
-    platforms : list -> list for platforms. needed when checking for collisions with player and mobs
-    all_physics_objects : list -> list for all objects that have gravity effect, excluds player
-    coins : list -> list for all collectable coins/healthdrops
-    player_projectiles : list -> list for all player projectiles.
-    all_enemies : list -> list of all enemies
-    enemy_projectiles : list -> list for all enemies projectiles.
-    camera : object -> a camera object that applies a setoff for all objects
-    player : object -> the player sprite.
-    playing : boolean -> checks whether the user is playing a level or is on the menu
-    running : boolean -> exits game if set to false 
-    waiting : boolean -> flow control variable. pauses the game when set to true
 
     Methods
     -------
@@ -103,108 +86,119 @@ class Game:
         utility method for killing all sprites inside a group
     quit()
         quits game
-    
+
     """
+    @debug
     def __init__(self):
         """__init__ methode of game class that starts pygame and loads data"""
+        print_log("STARTED A GAME")
+
+        print_log("DEFINING VARIABLE TYPES")
+        # type definitions for asset variables
+        self.xeon_image_collection: Image_collection
+        self.bullets_spritesheet: Spritesheet
+        self.healthdrop_spritesheet: Spritesheet
+        self.healthdrop_xmldata: ET.ElementTree
+        self.main_menu_background: Surface
+        self.map: TiledMap
+        self.map_image: Surface
+        self.map_rect: Rect
+        self.intro_sound:mixer.Sound
+        self.platformer_bg_sound:mixer.Sound
+
+        # type definitions for game varaibles
+        self.screen: pg.Surface
+        self.clock: time.Clock
+        self.running: bool
+
+        # type definitions for game logic variables
+        self.all_sprites : sprite.Group
+        self.platforms : sprite.Group
+        self.all_physics_objects : sprite.Group
+        self.coins : sprite.Group
+        self.player_projectiles : sprite.Group
+        self.all_enemies : sprite.Group
+        self.enemy_projectiles : sprite.Group
+        self.camera : Camera
+
+        print_log("STARTING PYGAME")
         pg.init()
         pg.mixer.init()
-        self.screen: pg.Surface = pg.display.set_mode((WIDTH,HEIGHT))
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
-        self.clock = pg.time.Clock()
+        self.clock = time.Clock()
         self.running = True
-        self.font_arial = pg.font.match_font(FONT_ARIAL)
-        self.font_arcade_in = FONT_ARCADE_IN
-        self.score = 0
         self.load_data()
-        self.fps = FPS
 
-    def load_data(self):
-        """Loads all game data and assets.
-
-        Constants are loaded from settings.py
-
-        Parameters
-        ----------
-        none.
-
-        Returns
-        -------
-        none.
-        
-        Rasises
-        -------
-        Exception
-            can't load highscore
+    @debug
+    def load_data(self) -> None:
         """
-        # load Highscore
-        with open(HS_FILE, "r") as fh:
-            try:
-                self.highscore = int(fh.read())
-            except Exception as e:
-                self.highscore = 0
-                print("Can't load Highscore")
-                print(e)
+        A function that wraps all game assets loading calls.
+        Data is stored in game variables.
+        """
         # load Xeon Spritesheet
-        self.xeon_spritesheet = Spritesheet(XEON_SPRITESHEET)
+        print_log("LOADING ASSETS...")
+        print_log("LOADING PLAYER SPRITESHEET")
+        self.xeon_image_collection = Image_collection(XEON_SPRITESHEET)
 
-        # load coin Spritesheet
-        self.coin_spritesheet = Spritesheet(COIN_SPRITESHEET)
+        print_log("LOADING BULLETS SPRITESHEET")
         self.bullets_spritesheet = Spritesheet(BULLETS_SPRITESHEET)
+
+        print_log("LOADING HEALTHDROP SPRITESHEET")
         self.healthdrop_spritesheet = Spritesheet(HEALTHDROP_SPRITESHEET)
         self.healthdrop_xmldata = ET.parse(HEALTHDROP_XML_DATA)
 
         # load menu background
-        self.main_menu_background = pg.image.load(os.path.join(ASSETS_PATH, "main_menu_background.png")).convert()
+        print_log("LOADING BACKGROUND IMAGE SPRITESHEET")
+        self.main_menu_background = pg.image.load(os.path.join(
+            ASSETS_PATH, "main_menu_background.png")).convert()
 
         # load map
-        self.map = TiledMap(LEVEL1_PATH) #TODO: PASS THE LEVEL LOADED IS A PARAM
+        print_log("LOADING MAP")
+        # TODO: PASS THE LEVEL LOADED IS A PARAM
+        self.map = TiledMap(LEVEL1_PATH)
         self.map_image = self.map.make_map()
         self.map_rect = self.map_image.get_rect()
 
         # load sounds
-        self.intro_sound = pg.mixer.Sound(INTRO_SOUND_PATH)
-        self.platformer_bg_sound = pg.mixer.Sound(PLATFORMER_BG_SOUND_PATH)
+        print_log("LOADING SOUNDS")
+        self.intro_sound = mixer.Sound(INTRO_SOUND_PATH)
+        self.platformer_bg_sound = mixer.Sound(PLATFORMER_BG_SOUND_PATH)
 
+        print_log("ASSETS LOADED SUCCESSFULLY", "SUCCESS")
 
+    @debug
     def new(self):
-        """runs code that starts a new gameplayer.
-        this method sets up the assets, enemies, player and coins before running the run() method
-
-        Constants needed are loaded from settings.py
-
-        Parameters
-        ----------
-        none.
-
-        Returns
-        -------
-        none.
-
-        Rasises
-        -------
-        none.
         """
+        runs code that starts a new game.
+        this method sets up the enemies, player and coins before running the **run()** method.
+        """
+
+        print_log("<game.new>:STARTING A NEW GAME")
+
+        print_log("<game.new>:SETTING UP GROUPS")
         # start the game
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = sprite.Group()
         self.platforms = pg.sprite.Group()
         self.all_physics_objects = pg.sprite.Group()
-        #self.scorllable_sprites = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.player_projectiles = pg.sprite.Group()
         self.all_enemies = pg.sprite.Group()
         self.enemy_projectiles = pg.sprite.Group()
 
         # new camera
+        print_log("<game.new>:SETTING UP CAMERA")
         self.camera = Camera(self.map.width, self.map.height)
 
         # create tile objects
+        print_log("<game.new>:ADDED OBJECTS TO THE MAP")
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "player":
                 self.player = Player(self, tile_object.x, tile_object.y)
                 self.all_sprites.add(self.player)
             if tile_object.name == "platform":
-                p = TiledPlatform(self, tile_object.x,tile_object.y, tile_object.width, tile_object.height)
+                p = TiledPlatform(self, tile_object.x, tile_object.y,
+                                  tile_object.width, tile_object.height)
                 self.platforms.add(p)
             if tile_object.name == "coin":
                 c = HealthDrop(self, tile_object.x, tile_object.y)
@@ -216,11 +210,12 @@ class Game:
                 self.all_enemies.add(e)
                 self.all_physics_objects.add(e)
 
-        # create player 
+        # create player
         self.run()
-        
+
         pass
 
+    @debug
     def run(self):
         """A simple function to control game loop
 
@@ -236,13 +231,14 @@ class Game:
         """
         # Game Loop
         self.playing = True
-        #self.platformer_bg_sound.play()
+        # self.platformer_bg_sound.play()
         while self.playing:
-            self.clock.tick(self.fps)
+            self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
         self.platformer_bg_sound.fadeout(1000)
+
 
     def update(self):
         """Game.update
@@ -271,35 +267,29 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
 
-
-
         # New Camera Scrolling
         self.camera.update(self.player)
+
         # Player Coin Collecting
-        coin_hits = pg.sprite.spritecollide(self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
+        coin_hits = pg.sprite.spritecollide(
+            self.player, self.coins, True, pg.sprite.collide_circle_ratio(0.5))
         for coin in coin_hits:
             self.player.health += 10
 
-        # Player getting shot
-        # with directional push effect.
-        # fixme: add screenshake
-        player_hits = pg.sprite.spritecollide(self.player, self.enemy_projectiles, True)
-        if player_hits:
-            self.player.vel += player_hits[0].vel // 5
-            self.player.take_damage(10)
-
         # Mobs getting shot
-        enemy_hits = pg.sprite.groupcollide(self.player_projectiles, self.all_enemies, True, False)
+        enemy_hits = pg.sprite.groupcollide(
+            self.player_projectiles, self.all_enemies, True, False)
         for hit in enemy_hits:
-            sprites = enemy_hits.get(hit)
-            for sprite in sprites:
-                sprite.kill()
+            enemy_sprites = enemy_hits.get(hit)
+            for enemy_sprite in enemy_sprites:
+                enemy_sprite.kill()
 
         # Game Over:
         if self.player.rect.bottom > self.camera.height:
             self.playing = False
         if self.player.health < 10:
             self.playing = False
+
 
     def events(self):
         """ Method for controlling the event loop.
@@ -323,14 +313,13 @@ class Game:
             if event.type == pg.QUIT:
                 self.playing = False
                 self.running = False
-            
+
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
                     self.player.jump_cut()
                 if event.key == pg.K_k:
                     self.player.shooting_locked = False
 
-    
     def draw(self):
         """ Method for drawing graphics, 
         applying the camera offset and showing the player health bar
@@ -353,26 +342,27 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             # draw sptite outline
             #self.screen.blit(self.get_outline(sprite.image), self.camera.apply(sprite))
-            
+
         self.screen.blit(self.player.image, self.camera.apply(self.player))
         # draw player outline
         #self.screen.blit(self.get_outline(self.player.image), self.camera.apply(self.player))
-        
+
         # Draw Player Score
-        self.health_box = pg.Surface((300,50))
+        self.health_box = pg.Surface((300, 50))
         self.health_box.fill(BLACK)
         self.screen.blit(self.health_box, (0, 0))
 
         # Draw fbs
-        self.fbs_box = pg.Surface((300,50))
+        self.fbs_box = pg.Surface((300, 50))
         self.fbs_box.fill(BLACK)
         self.screen.blit(self.fbs_box, (0, 0))
-        self.draw_text("FPS: "+str(self.fps), 32, (WHITE,BLACK), 150, 30)
+        self.draw_text("FPS: "+str(FPS), 32, (WHITE, BLACK), 150, 30)
 
         ## after everything ##
         pg.display.flip()
 
-    def draw_text(self, text: str, size: int, color: Tuple[tuple,tuple], x: int, y: int, surface:pg.surface.Surface=None):
+
+    def draw_text(self, text: str, size: int, color: Tuple[tuple, tuple], x: int, y: int, surface: pg.surface.Surface = None):
         """A method that draws a text of a surface or the main screen
 
         Parameters
@@ -399,11 +389,11 @@ class Game:
 
         # render them to get two surfaces
         text_in_surface: Surface = font_in.render(text, True, color[0])
-        text_out_surface: Surface  = font_out.render(text, True, color[1])
+        text_out_surface: Surface = font_out.render(text, True, color[1])
         text_in_rect: Rect = text_in_surface.get_rect()
         text_out_rect: Rect = text_out_surface.get_rect()
-        text_in_rect.topleft = (0,0)
-        text_out_rect.topleft = (0,0)
+        text_in_rect.topleft = (0, 0)
+        text_out_rect.topleft = (0, 0)
 
         # create a final surface and blit the two surfaces on it
         text_surface = Surface(text_in_surface.get_size())
@@ -424,6 +414,7 @@ class Game:
         # return the text_surface so you dont have to draw it again.
         return text_surface, text_surface_rect
 
+    @debug
     def show_start_screen(self):
         """ method that describes how the start screen look like
 
@@ -437,16 +428,20 @@ class Game:
         -------
         none.
         """
-        #self.intro_sound.play()
-        self.screen.blit(self.main_menu_background, self.main_menu_background.get_rect())
+        # self.intro_sound.play()
+        self.screen.blit(self.main_menu_background,
+                         self.main_menu_background.get_rect())
 
-        self.draw_text("Press a key to play", 64, (RED,BLACK), WIDTH/2, HEIGHT * 3/4)
+        self.draw_text("Press a key to play", 64,
+                       (RED, BLACK), WIDTH/2, HEIGHT * 3/4)
         pg.display.flip()
         self.wait_for_key()
         self.intro_sound.fadeout(1000)
         self.show_start_text()
 
+    @debug
     def show_start_text(self):
+        # move text to a txt file
         text = """
         Year 2023. Sep. 21
         Human scientists finally invented
@@ -469,17 +464,18 @@ class Game:
         complete_surface = Surface((WIDTH*2//3, HEIGHT*3))
         text_lines = []
         for index, line in enumerate(text.splitlines()):
-            line = encode_string(line.strip(), "utf-8")
-            text_surface, text_surface_rect = self.draw_text(line, 32, (WHITE,BLACK), x=0,y=32*index, surface=complete_surface)
+            line = line.strip()
+            text_surface, text_surface_rect = self.draw_text(
+                line, 32, (WHITE, BLACK), x=0, y=32*index, surface=complete_surface)
             text_lines.append((text_surface, text_surface_rect))
 
-    
         complete_surface_rect = complete_surface.get_rect()
-        complete_surface_rect.topleft = (WIDTH//6,HEIGHT)
+        complete_surface_rect.topleft = (WIDTH//6, HEIGHT)
 
-        print("STARTED")
+        print_log("STARTED INTRO")
         waiting = True
-        while waiting and complete_surface_rect.bottom > 0: # while the bot of the text surface has not reached the top of screen
+        # while the bot of the text surface has not reached the top of screen
+        while waiting and complete_surface_rect.bottom > 0:
             # scroll text up
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -489,15 +485,13 @@ class Game:
                     waiting = False
 
             self.clock.tick(60)
-            complete_surface_rect.y -=1
-            complete_surface.blits(text_lines,False)
+            complete_surface_rect.y -= 1
+            complete_surface.blits(text_lines, False)
             self.screen.blit(complete_surface, complete_surface_rect)
             pg.display.flip()
-            print("LOOPED")
-        print("FINNISHED")
+        print_log("FINNISHED INTRO")
 
-
-
+    @debug
     def show_over_screen(self):
         """ Method for describing how the game over screen look like
 
@@ -514,13 +508,15 @@ class Game:
         if self.running:
             self.kill_sprite_group(self.all_sprites)
             self.screen.fill(BG_COLOR)
-            self.draw_text("Game Over", 64, (WHITE,BLACK), WIDTH/2, HEIGHT/4)
-            self.draw_text(f"Your Score is {self.score}", 22, (WHITE,BLACK), WIDTH/2, HEIGHT/2)
-            self.draw_text("Press a key to play again.", 22, (WHITE,BLACK), WIDTH/2, HEIGHT * 3/4)
+            self.draw_text("Game Over", 64, (WHITE, BLACK), WIDTH/2, HEIGHT/4)
+            self.draw_text(
+                f"Your Score is {self.score}", 22, (WHITE, BLACK), WIDTH/2, HEIGHT/2)
+            self.draw_text("Press a key to play again.", 22,
+                           (WHITE, BLACK), WIDTH/2, HEIGHT * 3/4)
             pg.display.flip()
-            self.wait_for_key()   
+            self.wait_for_key()
 
-
+    @debug
     def wait_for_key(self):
         """ method that pauses the game until a key is pressed
 
@@ -545,25 +541,27 @@ class Game:
                 if event.type == pg.KEYUP:
                     waiting = False
 
+    @debug
     def kill_sprite_group(self, group: pg.sprite.Group):
         """ Method that kills all sprites in a group.
 
         Parameters
         ----------
         group: pg.sprite.Group -> group of sprites to be disposed of
-        
+
         Returns
         -------
         none.
-        
+
         Rasises
         -------
         none.
         """
-        # kill all sprites in a to improve performance 
+        # kill all sprites in a to improve performance
         for sprite in group:
             sprite.kill()
 
+    @debug
     def quit(self):
         """ Quits the game
 
@@ -581,6 +579,7 @@ class Game:
         pg.quit()
 
     # SOURCE: https://pastebin.com/XXRngMZh
+    @debug
     def get_outline(self, image, color=RED):
         """Returns an outlined image of the same size.  the image argument must
         either be a convert surface with a set colorkey, or a convert_alpha
@@ -589,11 +588,10 @@ class Game:
         mask = pg.mask.from_surface(image)
         outline = mask.outline()
         outline_image = pg.Surface(rect.size).convert_alpha()
-        outline_image.fill((0,0,0,0))
+        outline_image.fill((0, 0, 0, 0))
         for point in outline:
-            outline_image.set_at(point,color)
+            outline_image.set_at(point, color)
         return outline_image
-
 
 
 if __name__ == "__main__":
@@ -603,4 +601,3 @@ if __name__ == "__main__":
         g.new()
         g.show_over_screen()
     g.quit()
-    

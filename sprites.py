@@ -1,33 +1,72 @@
-"""Sprites:
+f"""
+AUTHOR
+------
+    Mouaz Tabboush
 
-    This script  does thsi and that
+NAME
+----
+    sprites
 
-    any special cases
+DESCRIPTION
+-----------
+    sprites - a submodule containing classes for the game's objects
+    =====================================================================
+    **sprites** is a submodule for the game containing classes for any objects that the player sees and require game logic
+    each class has their own **update()** method which is called in the main game loop.
+    in most casses object methods are called instead in the update method and not in the main game loop.
 
-    any requirements
+CONTENT
+-------
+    * Player
+    * Projectile
+    * BaseEnemy
+    * HealthDrop
+    * TiledPlatform
 
-    The filed can be imported and contains the following classes:
-        * Spritesheet - a utility class for loading sprites
-        * Player  
+REQUIREMENTS
+------------
+    * pygame
+    * random
+    * settings
+    * util
+
+VERSION
+-------
+    1.0
+
 """
+from os import listdir
+from os.path import isfile, join
 import random
-import xml.etree.ElementTree as ET
 
+from pygame.constants import K_d, K_e
+from util import debug, print_log
 import pygame as pg
-from pygame import key, mask, sprite
+from pygame import Surface, key, mask, sprite
 from pygame.mixer import fadeout
 
 from settings import *
 
 vec = pg.math.Vector2
 
-class Spritesheet:
+class Spritesheet: # to be moved to util
+    """
+    Spritesheet
+    -----------------
+        A utility class for loading spritesheets as an entier image.
+
+    Methods
+    -----------------
+    * get_image(x,y,w,h) -> Surface
+
+    """
     # utility class for loading and parsing spritesheets
-    def __init__(self, filename):
+    @debug
+    def __init__(self, filename) -> None:
         self.filename = filename
         self.spritesheet = pg.image.load(filename).convert()
-    
-    def get_image(self, x, y, w, h):
+    @debug
+    def get_image(self, x, y, w, h) -> Surface:
         # grab an image out of a larger spritesheet
         image = pg.Surface((w, h))
         image.blit(self.spritesheet, (0,0), (x,y,w,h))
@@ -38,6 +77,34 @@ class Spritesheet:
         if self.filename == BULLETS_SPRITESHEET:
             image = pg.transform.scale2x(image)
         return image
+    
+    
+
+class Image_collection:# to be moved to util
+    @debug
+    def __init__(self, filename) -> None:
+        self.filename = filename
+        self.images = self.load_images_from_file(filename)
+    @debug
+    def get_image(self, name) -> Surface:
+        try:
+            return self.images[name]
+        except Exception:
+            print_log(f"ERROR:<Image_collection.get_image>:Image {name} not found!")
+            print_log(f"ERROR:<Image_collection.get_image>:Returning a Empty Surface instead!")
+            return Surface((50,100))
+    @debug
+    def load_images_from_file(self, filepath):
+        images = {}
+        for f in listdir(filepath):
+            print_log("INFO:<Image_collection.load_images_from_file>:Loading ..." + join(filepath, f)[-30:])
+            try:
+                if f == ".DS_Store":
+                    continue
+                images[f] = pg.transform.scale2x(pg.image.load(join(filepath, f)).convert())
+            except Exception as err:
+                print_log("ERROR:<Image_collection.load_images_from_file>:can't import ", join(filepath, f))
+        return images
 
 
 class Player(sprite.Sprite):
@@ -72,75 +139,70 @@ class Player(sprite.Sprite):
         self.last_shot = pg.time.get_ticks()
         self.last_damge = pg.time.get_ticks()
         
-
+    @debug
     def load_images(self):
-        # Adjustments needed for the xeon spritesheet, beacuse it has too much padding
-        X_ADJUSTMENT = 24
-        Y_ADJUSTMENT = 20
-        WIDTH_ADJUSTMENT = -36
-        HEIGHT_ADJUSTMENT = -44
-        load = self.game.xeon_spritesheet.get_image
+        load = self.game.xeon_image_collection.get_image
 
         self.standing_frames_r = [
-            load(96+X_ADJUSTMENT, 0+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT)
+            load("xeon_idle_1.png")
         ]
         self.walking_frames_r = [
-            load(0+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(96+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(192+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(288+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(384+X_ADJUSTMENT, 480+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(0+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(96+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(192+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(288+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-            load(384+X_ADJUSTMENT, 576+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+            load("xeon_walking_1.png"),
+            load("xeon_walking_2.png"),
+            load("xeon_walking_3.png"),
+            load("xeon_walking_4.png"),
+            load("xeon_walking_5.png"),
+            load("xeon_walking_6.png"),
+            load("xeon_walking_7.png"),
+            load("xeon_walking_8.png"),
+            load("xeon_walking_9.png"),
+            load("xeon_walking_10.png"),
         ]
         self.jumping_frames_r = [
-                load(0+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(96+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(192+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(288+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(384+X_ADJUSTMENT, 96+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(0+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(96+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(192+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(288+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
-                load(384+X_ADJUSTMENT, 192+Y_ADJUSTMENT, 96+WIDTH_ADJUSTMENT, 96+HEIGHT_ADJUSTMENT),
+                load("xeon_jumping_1.png"),
+                load("xeon_jumping_2.png"),
+                load("xeon_jumping_3.png"),
+                load("xeon_jumping_4.png"),
+                load("xeon_jumping_5.png"),
+                load("xeon_jumping_6.png"),
+                load("xeon_jumping_7.png"),
+                load("xeon_jumping_8.png"),
+                load("xeon_jumping_9.png"),
+                load("xeon_jumping_10.png"),
         ]
 
         # loading the shooting frames
         self.standing_shooting_frames_r = [
-            load(x=192+X_ADJUSTMENT, y=0+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=288+X_ADJUSTMENT, y=0+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=384+X_ADJUSTMENT, y=0+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
+                load("xeon_idle_shooting_1.png"),
+                load("xeon_idle_shooting_2.png"),
+                load("xeon_idle_shooting_3.png"),
         ]
 
         self.jumping_shooting_frames_r = [
-            load(x=0+X_ADJUSTMENT, y=288+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=96+X_ADJUSTMENT, y=288+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=192+X_ADJUSTMENT, y=288+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=288+X_ADJUSTMENT, y=288+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=384+X_ADJUSTMENT, y=288+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=0+X_ADJUSTMENT, y=384+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=96+X_ADJUSTMENT, y=384+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=192+X_ADJUSTMENT, y=384+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=288+X_ADJUSTMENT, y=384+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=384+X_ADJUSTMENT, y=384+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
+                load("xeon_jumping_shooting_1.png"),
+                load("xeon_jumping_shooting_2.png"),
+                load("xeon_jumping_shooting_3.png"),
+                load("xeon_jumping_shooting_4.png"),
+                load("xeon_jumping_shooting_5.png"),
+                load("xeon_jumping_shooting_6.png"),
+                load("xeon_jumping_shooting_7.png"),
+                load("xeon_jumping_shooting_8.png"),
+                load("xeon_jumping_shooting_9.png"),
+                load("xeon_jumping_shooting_10.png"),
         ]
 
         self.walking_shooting_frames_r = [
-            load(x=0+X_ADJUSTMENT, y=672+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=96+X_ADJUSTMENT, y=672+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=192+X_ADJUSTMENT, y=672+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=288+X_ADJUSTMENT, y=672+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=384+X_ADJUSTMENT, y=672+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=0+X_ADJUSTMENT, y=768+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=96+X_ADJUSTMENT, y=768+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=192+X_ADJUSTMENT, y=768+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=288+X_ADJUSTMENT, y=768+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-            load(x=384+X_ADJUSTMENT, y=768+Y_ADJUSTMENT, w=96+WIDTH_ADJUSTMENT, h=96+HEIGHT_ADJUSTMENT),
-        ]
+                load("xeon_walking_shooting_1.png"),
+                load("xeon_walking_shooting_2.png"),
+                load("xeon_walking_shooting_3.png"),
+                load("xeon_walking_shooting_4.png"),
+                load("xeon_walking_shooting_5.png"),
+                load("xeon_walking_shooting_6.png"),
+                load("xeon_walking_shooting_7.png"),
+                load("xeon_walking_shooting_8.png"),
+                load("xeon_walking_shooting_9.png"),
+                load("xeon_walking_shooting_10.png")
+                ]
 
         # flip all frames
         # TODO: This can be done a bit more elligantly
@@ -181,7 +243,7 @@ class Player(sprite.Sprite):
         else:
             self.movement_flags["up"] = False
             self.movement_flags["down"] = False
-    
+
     def update_animation_flags(self):
         if self.movement_flags["right"] or self.movement_flags["left"]:
             self.animation_flags["walk"] = True
@@ -256,33 +318,27 @@ class Player(sprite.Sprite):
         self.acc = vec(0,0)
         if keyState[pg.K_a]:
             self.acc.x = -PLAYER_ACC
-        elif keyState[pg.K_d]:
+        if keyState[pg.K_d]:
             self.acc.x = PLAYER_ACC
         self.move_x()
         # apply collision with platforms on the x
         platforms = self.game.platforms
         platform_hits = sprite.spritecollide(self, platforms, False)
         if platform_hits:
-            # get only the mask collisions
-            mask_cols = []
-            for plt in platform_hits:
-                mask_col = sprite.collide_mask(self, plt)
-                if mask_col:
-                    mask_cols.append(plt)
             # handel x collisions             
-            for hit in mask_cols:
+            for hit in platform_hits:
                 if self.movement_flags["left"]:
                     self.collision_flags["left"] = True
                     self.movement_flags["left"] = False
                     self.rect.left = hit.rect.right
-                    self.pos.x = self.rect.bottomleft[0] + (self.rect.width/2) - 20
+                    self.pos.x = self.rect.midbottom[0]
                     self.vel.x = 0
                     self.acc.x = 0
                 elif self.movement_flags["right"]:
                     self.collision_flags["right"] = True
                     self.movement_flags["right"] = False
                     self.rect.right = hit.rect.left
-                    self.pos.x = self.rect.bottomright[0] - (self.rect.width/2) + 40
+                    self.pos.x = self.rect.midbottom[0]
                     self.vel.x = 0
                     self.acc.x = 0
                 else:
@@ -301,14 +357,8 @@ class Player(sprite.Sprite):
         platforms = self.game.platforms
         platform_hits = sprite.spritecollide(self, platforms, False)
         if platform_hits:
-            # get only the mask collisions
-            mask_cols = []
-            for plt in platform_hits:
-                mask_col = sprite.collide_mask(self, plt)
-                if mask_col:
-                    mask_cols.append(plt)
             # handel x collisions             
-            for hit in mask_cols:
+            for hit in platform_hits:
                 if self.movement_flags["up"]:
                     self.collision_flags["up"] = True
                     self.movement_flags["up"] = False
@@ -327,8 +377,7 @@ class Player(sprite.Sprite):
 
         self.update_movement_flags()
         self.update_animation_flags()
-        
-        
+  
     def shot(self):
         # create new projectile
         # add it to game.player_projectiles
@@ -355,7 +404,7 @@ class Player(sprite.Sprite):
                 self.health -= amount
                 self.last_damge = pg.time.get_ticks()
         
-
+ 
     def jump(self):
         # jump only if standing on a platform
         # detect two pixels below the player
@@ -364,28 +413,28 @@ class Player(sprite.Sprite):
         self.rect.y -= 2 
         if hits:
             self.vel.y = PLAYER_JUMP
-    
+
     def jump_cut(self):
         if self.jumping:
             if self.vel.y < PLAYER_JUMP//2:
                 self.vel.y = PLAYER_JUMP//2
-    
+
     def animate(self):
         now = pg.time.get_ticks()
         def show_continuous_animation(frame_list):
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(frame_list)
-            self.image = frame_list[self.current_frame]
             pos = self.pos
-            self.rect = self.image.get_rect()
+            self.image = frame_list[self.current_frame]
+            #self.rect = self.image.get_rect()
             self.pos = pos
         
         def show_linear_animation(frame_list):
             self.last_update = now
             self.current_frame = min(self.current_frame + 1, len(frame_list) -1)
-            self.image = frame_list[self.current_frame]
             pos = self.pos
-            self.rect = self.image.get_rect()
+            self.image = frame_list[self.current_frame]
+            #self.rect = self.image.get_rect()
             self.pos = pos
 
         
@@ -449,17 +498,12 @@ class Player(sprite.Sprite):
                 if self.current_frame == len(self.standing_shooting_frames_r) - 1:
                     self.animation_flags["shoot"] = False
             else: 
-                if now - self.last_update > 100:
+                if now - self.last_update > 50:
                     if self.animation_flags["face_right"]:
                         show_continuous_animation(self.standing_frames_r)
                     elif not self.animation_flags["face_right"]:
                         show_continuous_animation(self.standing_frames_l)
 
-
-
-            
-
-        
 
 class Projectile(sprite.Sprite):
     def __init__(self, x, y, x_vel, facing_right, shooter):
@@ -475,7 +519,7 @@ class Projectile(sprite.Sprite):
         self.init_x_pos = x
         self.current_frame = 0
         self.last_update = pg.time.get_ticks()
-
+    @debug
     def load_images(self):
         MARGIN_RIGHT = 1
         HEIGHT = 7
@@ -592,40 +636,9 @@ class BaseEnemy(sprite.Sprite):
 
 
 
-class Coin(sprite.Sprite):
-    def __init__(self, game,x,y, color="green"):
-        super().__init__()
-        self.game = game
-        self.color = color
-        self.load_image()
-        self.rect = self.image.get_rect()
-        self.rect.center = (x,y)
-        self.set_value()
-
-    def load_image(self):
-        load = self.game.coin_spritesheet.get_image
-        if self.color == "green":
-            self.image = load(0, 0, 64, 62)
-        if self.color == "blue":
-            self.image = load(64, 0, 64, 62)
-        if self.color == "yellow":
-            self.image = load(128, 0, 64, 62)
-        if self.color == "red":
-            self.image = load(192, 0, 64, 62)
-        
-        self.image.set_colorkey(COIN_SPRITESHEET_KEYCOLOR)
-
-    def set_value(self):
-        if self.color == "green":
-            self.value = 50
-        if self.color == "blue":
-            self.value = 100
-        if self.color == "yellow":
-            self.value = 200
-        if self.color == "red":
-            self.value = 500
-
+# debug decorators on this calss aer throwing an error for some reason
 class HealthDrop(sprite.Sprite):
+    
     def __init__(self, game, x, y):
         super().__init__()
         self.game = game
@@ -636,7 +649,7 @@ class HealthDrop(sprite.Sprite):
         # physics variables
         self.rect = self.image.get_rect()
         self.rect.midbottom = (x, y)
-
+    @debug
     def load_images(self):
         def load_sprite_positions(xmldata):
             sprites = xmldata.findall("sprite")
@@ -666,18 +679,6 @@ class HealthDrop(sprite.Sprite):
 
     def update(self):
         self.animate()
-
-
-class Platform(sprite.Sprite):
-    """DEPRICATED CLASS!!!"""
-    def __init__(self, x, y, w, h):
-        super().__init__()
-        self.image = pg.Surface((w,h))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
 
 class TiledPlatform(sprite.Sprite):
     def __init__(self, game, x, y, w, h):

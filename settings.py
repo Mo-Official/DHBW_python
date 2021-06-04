@@ -14,11 +14,13 @@ The this script is imported
 import os
 
 # system stats
+LOGGING = True
+CALLS_DEBUG = True
 GAME_PATH = os.path.dirname(__file__)
 HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
 
 ASSETS_PATH = os.path.join(GAME_PATH, "assets")
-XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_spritesheet.png") # made with Texture Packer
+XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_frames") # made with Texture Packer
 COIN_SPRITESHEET = os.path.join(ASSETS_PATH, "coins_spritesheet.png") # made with Texture Packer
 HEALTHDROP_SPRITESHEET = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.png") # made with Texture Packer
 BULLETS_SPRITESHEET = os.path.join(ASSETS_PATH, "bullets_normal.png") # made with Texture Packer

@@ -44,7 +44,6 @@ class Camera:
         y = min(0, y) # top 
         x = max(-(self.width - WIDTH), x) # right
         y = max(-(self.height - HEIGHT), y) # buttom
-
         self.camera = pg.Rect(x, y, self.width, self.height)
 
 
