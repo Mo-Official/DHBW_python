@@ -4,3 +4,6 @@ test_notebook.ipynb
 assets/.DS_Store
 test_notebook.ipynb
 __pycache__/settings.cpython-39.pyc
+.DS_Store
+test_notebook.ipynb
+assets/.DS_Store
