@@ -22,7 +22,7 @@ LOGGING_TO_CONSOLE = False
 LOGGING_TO_FILE = True
 
 # Customize Logs
-LOG_INFO = True # set to true to see info when loading stuff
+LOG_INFO = True # set to true to see additional info when loading stuff
 
 # Shows function calls if set to true
 # NOTE: Functions need to have the @debug decorator in order to be debugged
