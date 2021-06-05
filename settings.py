@@ -1,81 +1,83 @@
-"""Settings
-
-This Script is where all the constants for the game are.
-
-The this script is imported
-
-    attributes:
-        name: MOUAZ TABBOUSH
-        date: 19.04.2020
-        version: 1.0
-
-"""
-
 import os
 
-# system stats
-LOGGING = True
+__doc__ = """
+    Author: Mouaz Tabboush 
+    Settings - This Script is where all the constants for the game are stored.
+    ==========================================================================
+    The this script is meant to be imported by other game scripts to access constants
+
+    Requirements
+    ============
+    * os
+
+    Other
+    =====
+    * Change LOGGING to True to log processes on the terminal.
+    * Change CALLS_DEBUG to True to log function calls on the terminal.
+"""
+
+
+# Shows game Logs in the console if set to true
+LOGGING = False
+
+# Shows function calls if set to true
+# NOTE: Functions need to have the @debug decorator in order to be debugged
 CALLS_DEBUG = True
+
+
+# System stats
+# Using os.path to make sure the game runs on all OS
 GAME_PATH = os.path.dirname(__file__)
 HS_FILE = os.path.join(GAME_PATH, "HighScore.txt")
-
 ASSETS_PATH = os.path.join(GAME_PATH, "assets")
-XEON_SPRITESHEET = os.path.join(ASSETS_PATH, "xeon_frames") # made with Texture Packer
+SOUNDS_PATH = os.path.join(GAME_PATH, "snd")
+FONT_PATH = os.path.join(GAME_PATH, "fonts")
+MAP_PATH = os.path.join(GAME_PATH, "maps")
+
+# Paths to assets
+XEON_FRAMES = os.path.join(ASSETS_PATH, "xeon_frames") # made with Gimp
 COIN_SPRITESHEET = os.path.join(ASSETS_PATH, "coins_spritesheet.png") # made with Texture Packer
 HEALTHDROP_SPRITESHEET = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.png") # made with Texture Packer
 BULLETS_SPRITESHEET = os.path.join(ASSETS_PATH, "bullets_normal.png") # made with Texture Packer
 HEALTHDROP_XML_DATA = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.xml") # made with Texture Packer
 
-MAP_PATH = os.path.join(GAME_PATH, "maps")
-LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx")
-#LEVEL1_PATH = os.path.join(MAP_PATH, "first_level.tmx")
+# Paths to maps
+LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx") # made with Tiled
+LEVEL2_PATH = os.path.join(MAP_PATH, "level2.tmx") # made with Tiled
 
-
-SOUNDS_PATH = os.path.join(GAME_PATH, "snd")
+# Paths to Sounds
 INTRO_SOUND_PATH = os.path.join(SOUNDS_PATH, "intro.ogg")
 PLATFORMER_BG_SOUND_PATH = os.path.join(SOUNDS_PATH, "platformer-bg.mp3")
 
-
-# window stats
-WIDTH = 1024
-HEIGHT = 800
-TITLE = "My Game"
-FPS = 60
-
-# TODO: User 8-bit-arcade font
-
-FONT_ARIAL = "arial"
-FONT_PATH = os.path.join(GAME_PATH, "fonts")
+# Paths to Fonts
 FONT_ARCADE_IN = os.path.join(FONT_PATH, "8-bit Arcade In.ttf")
 FONT_ARCADE_OUT = os.path.join(FONT_PATH, "8-bit Arcade Out.ttf")
+
+
+# Window stats
+WIDTH = 1024
+HEIGHT = 800
+TITLE = "Xeon - The Unfinished game"
+FPS = 60
+
+
+# NOTE: Not being used anymore. using Font_Arcade instead.
+FONT_ARIAL = "arial"
 
 # Player properties
 PLAYER_ACC = 1
 PLAYER_FRICTION = -0.12
 PLAYER_GRAVITY = 0.8
 PLAYER_JUMP = -20
-CAM_POINT = (int(WIDTH/2),(HEIGHT/2))
 PLAYER_HEALTH = 100
 PLAYER_INVULNERABILITY = 1000
 SHOT_KILL_DISTANCE = 600
 SHOOT_COOLDOWN = 400
 
-# Starting Platforms
-PLATFORM_LIST = [
-    (0, HEIGHT - 40 , WIDTH, 40),
-    (WIDTH/2 - 200, HEIGHT * 3/4 - 50, 100, 20),
-    (125, HEIGHT - 350, 100, 20),
-    (350, 200, 100, 20),
-    (175, 100, 50, 20)]
+# Position of the camera's target on the window
+CAM_POINT = (int(WIDTH/2),(HEIGHT/2))
 
-COIN_LIST = [
-    (50, HEIGHT-100, 100),
-    (125, HEIGHT - 400, 75),
-    (350, 250, 25)
-]
-
-
-# colors
+# Color definitions
 WHITE = (255,255,255)
 TESTCOLOR = (205,205,205)
 BLACK = (0,0,0)
@@ -87,6 +89,8 @@ CYAN = (224,255,255)
 YELLOW = (255,255,0)
 LIGHTBLUE = (0, 155, 155)
 PINK = (236,57,190)
+
 BG_COLOR = LIGHTBLUE
 XEON_SPRITESHEET_KEYCOLOR = GREEN
 COIN_SPRITESHEET_KEYCOLOR = PINK
+BASE_ENEMY_KEYCOLOR = (77, 75, 118)

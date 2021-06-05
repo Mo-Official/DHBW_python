@@ -1,46 +1,68 @@
-from typing import Tuple
-import pygame as pg
-from pygame import Rect, Surface, font
-from settings import *
 import functools
+from typing import Tuple
 
-def draw_text(surface:Surface, text: str, coord:Tuple[int,int]=(0,0), size=16, color=WHITE, stretch_surface=True) -> None:
-    used_font:font.Font = font.Font(pg.font.match_font(FONT_ARIAL), size)
-    text_surface: Surface = used_font.render(text, True, color)
-    text_rect = text_surface.get_rect()
-    text_rect.x = coord[0]
-    text_rect.y = coord[1]
-    surface_rect :Rect = surface.get_rect()
-    
-    # make the surface bigger, if the text_rect is bigger
-    if stretch_surface:
-        if text_rect.width>surface_rect.width:
-            surface.get_width
-            surface_rect.width = text_rect.width
-        if text_rect.height>surface_rect.height:
-            surface_rect.height = text_rect.height
+import pygame as pg
+from pygame import Surface
 
-    surface.blit(text_surface, text_rect)
+from settings import CALLS_DEBUG, LOGGING, RED
+
+__doc__ = """
+    Author: Mouaz Tabboush
+
+    util - A collection of utility functions
+    ========================================
+
+    util is a script containing functions used for debugging the game.
+
+    Requirements
+    ============
+
+    * pygame
+    * functools
+    * typing.Tuple
+    * settings.CALLS_DEBUG
+    * settings.LOGGING
+    * settings.RED
+"""
 
 def print_log(msg, mode="INFO"):
     if LOGGING:
         print("\n",mode,":",msg)
 
-
-
-def debug(func, debug=True):
+def debug(func):
     """
-    Print the function signature and return value
+    Print the function signature and returns value
     SOURCE: https://realpython.com/primer-on-python-decorators/#debugging-code"""
-    if CALLS_DEBUG:
-        @functools.wraps(func)
-        def wrapper_debug(*args, **kwargs):
-            args_repr = [repr(a) for a in args]                      # 1
-            kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]  # 2
-            signature = ", ".join(args_repr + kwargs_repr)           # 3
+    @functools.wraps(func)
+    def wrapper_debug(*args, **kwargs):
+        args_repr = [repr(a) for a in args]                      # 1
+        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]  # 2
+        signature = ", ".join(args_repr + kwargs_repr)           # 3
+        if CALLS_DEBUG:
             print_log(f"CALLEING {func.__name__}({signature})")
-            value = func(*args, **kwargs)
+        value = func(*args, **kwargs)
+        if CALLS_DEBUG:
             print_log(f"{func.__name__!r} RETURNED {value!r}")           # 4
-            return value
-        return wrapper_debug
+        return value
+    return wrapper_debug
+
+    
+def get_outline(image: Surface, color: Tuple[int,int,int]=RED)->Surface:
+    """
+    Returns an outlined image of the same size.
+    
+    the image argument must either be a convert surface with a set colorkey, or a convert_alpha surface.
+    
+    color is the color which the outline will be drawn.
+    
+    SOURCE: https://pastebin.com/XXRngMZh
+    """
+    rect = image.get_rect()
+    mask = pg.mask.from_surface(image)
+    outline = mask.outline()
+    outline_image = pg.Surface(rect.size).convert_alpha()
+    outline_image.fill((0, 0, 0, 0))
+    for point in outline:
+        outline_image.set_at(point, color)
+    return outline_image
 
