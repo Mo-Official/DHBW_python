@@ -2,6 +2,16 @@
 
 This is a project for my python module in the university.
 
+## starting the game:
+To run the game install `python 3.8.5` or higher version.
+
+Once You have install python run `pip install -r requirements.txt` to install the dependancies for the game.
+
+If you have all dependancies installed run the game using `python main.py`.
+
+Enjoy. :)
+
+
 ## Project Description:
 This will be a Sci-fi Spaceshooter/Platformer game developed in pygame, but more effort will be put into the Platformer part.
 
