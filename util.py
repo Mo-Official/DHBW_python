@@ -1,10 +1,11 @@
 import functools
 from typing import Tuple
+from datetime import datetime
 
 import pygame as pg
 from pygame import Surface
 
-from settings import CALLS_DEBUG, LOGGING, RED
+from settings import CALLS_DEBUG, LOGGING_TO_CONSOLE, LOGGING_TO_FILE, LOG_INFO, RED
 
 __doc__ = """
     Author: Mouaz Tabboush
@@ -26,8 +27,23 @@ __doc__ = """
 """
 
 def print_log(msg, mode="INFO"):
-    if LOGGING:
-        print("\n",mode,":",msg)
+    if not LOG_INFO and mode=="INFO":
+        return
+
+    if LOGGING_TO_CONSOLE:
+        print("\n",mode,": ",msg)
+
+    if LOGGING_TO_FILE:
+        with open("log.txt", "a") as fh:
+            if not mode=="STARTUP":
+                    fh.write("\n"+mode+": "+msg)
+            else:
+                    fh.write("\n\n========================================")
+                    fh.write(f"\n# {mode}: {msg} at {datetime.now().strftime('%H:%M:%S')} #")
+                    fh.write("\n========================================")
+            
+        
+    
 
 def debug(func):
     """

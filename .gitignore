@@ -7,3 +7,5 @@ __pycache__/settings.cpython-39.pyc
 .DS_Store
 test_notebook.ipynb
 assets/.DS_Store
+log.txt
+env

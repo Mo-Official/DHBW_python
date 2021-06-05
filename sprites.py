@@ -111,7 +111,7 @@ class Image_collection:
         try:
             f_list = listdir(filepath)
         except:
-            print_log("Folder not found", "ERROR")
+            print_log("<Image_collection.load_images_from_file>Folder not found", "ERROR")
             return {}
 
         for f in f_list:

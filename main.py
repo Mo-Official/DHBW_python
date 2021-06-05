@@ -158,7 +158,7 @@ class Game:
     @debug
     def __init__(self) -> None:
         """__init__ methode of game class that starts pygame"""
-        print_log("STARTING PYGAME")
+        print_log("STARTING PYGAME", "STARTUP")
         pg.init()
         mixer.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))

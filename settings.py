@@ -18,11 +18,15 @@ __doc__ = """
 
 
 # Shows game Logs in the console if set to true
-LOGGING = False
+LOGGING_TO_CONSOLE = False
+LOGGING_TO_FILE = True
+
+# Customize Logs
+LOG_INFO = True # set to true to see info when loading stuff
 
 # Shows function calls if set to true
 # NOTE: Functions need to have the @debug decorator in order to be debugged
-CALLS_DEBUG = True
+CALLS_DEBUG = False
 
 
 # System stats
@@ -65,7 +69,7 @@ HEIGHT = 800
 TITLE = "Xeon - The Unfinished game"
 FPS = 60
 MUSIC_ON = True # turn of for a quiter experince :)
-MASTER_SOUND = 0.3 # can be between 0.0 and 1.0
+MASTER_SOUND = 0.2 # can be between 0.0 and 1.0
 
 
 # NOTE: Not being used anymore. using Font_Arcade instead.
