@@ -1,0 +1,13 @@
+        Some story lore
+
+        Xeon wants to clean the galaxy of space pirates.
+
+        Xeon and the scientist create an organisation to fight pirates. (Unimplemented story says hi)
+
+        Xeon's armor allows him to absorb life force from enemies to heal himself. (Unimplemented `Enemies should drop health pickups` says Hi)
+
+        Xeon can fight bosses and absorb their skills. (Megaman says Hi)
+
+        Xeon wants to fight the king of pirates at the end. (Unimplemented Boss fight says Hi)
+
+        After Xeon wins the fight the organization continues on as a private security firm. (Unimplemented Endless mode says Hi)

@@ -99,9 +99,9 @@ class Game:
         - camera : Camera
         - player : Player
 
-        Variables that need to be refactored
-        ------------------------------------
-        - health_box: pg.Surface
+        Other
+        -----
+        - intro_text: str
 
     Methods
     -------
@@ -152,15 +152,15 @@ class Game:
     playing: bool
     running: bool
 
-    # variables needed to be refractored
-    health_box: pg.Surface
+    # other
+    intro_text: str
 
     @debug
     def __init__(self) -> None:
         """__init__ methode of game class that starts pygame"""
         print_log("STARTING PYGAME")
         pg.init()
-        pg.mixer.init()
+        mixer.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = time.Clock()
@@ -185,9 +185,7 @@ class Game:
 
         # load menu background
         print_log("<game.run>:LOADING BACKGROUND IMAGE SPRITESHEET")
-        self.main_menu_background = pg.image.load(
-                                        os.path.join(ASSETS_PATH, "main_menu_background.png") # move to setting
-                                        ).convert()
+        self.main_menu_background = pg.image.load(MAIN_MENU_BG).convert()
 
         # load map
         print_log("<game.run>:LOADING MAP")
@@ -197,6 +195,10 @@ class Game:
         print_log("<game.run>:LOADING SOUNDS")
         self.intro_sound = mixer.Sound(INTRO_SOUND_PATH)
         self.platformer_bg_sound = mixer.Sound(PLATFORMER_BG_SOUND_PATH)
+
+        print_log("<game.run>:LOADING INTRO TEXT")
+        with open(INTRO_TEXT) as fh:
+            self.intro_text = fh.read()
 
         print_log("<game.run>:ASSETS LOADED SUCCESSFULLY", "SUCCESS")
 
@@ -270,7 +272,9 @@ class Game:
         Doesn't return anything.
         """
         self.playing = True
-        self.platformer_bg_sound.play()
+        if MUSIC_ON:
+            self.platformer_bg_sound.play()
+            self.platformer_bg_sound.set_volume(MASTER_SOUND)
         while self.playing:
             self.clock.tick(FPS)
             self.events()
@@ -414,65 +418,26 @@ class Game:
     @debug
     def show_start_screen(self) -> None:
         """method that describes how the start screen looks like"""
-        # self.intro_sound.play()
+        if MUSIC_ON:
+            self.intro_sound.play()
+            self.intro_sound.set_volume(MASTER_SOUND)
         self.screen.blit(self.main_menu_background,
                          self.main_menu_background.get_rect())
 
         self.draw_text("Press a key to play", 64,
-                       (RED, BLACK), WIDTH/2, HEIGHT * 3/4)
+                       (RED, BLACK), WIDTH/6, HEIGHT * 3/4)
         pg.display.flip()
         self.wait_for_key()
-        self.intro_sound.fadeout(1000)
-        self.show_start_text()
+        self.show_intro_scene()
 
     @debug
-    def show_start_text(self) -> None:
+    def show_intro_scene(self) -> None:
         """method that describes how the intro scene looks like"""
-        # TODO: move text to a txt file
-        text = """
-        Human scientists finally invented the means
-        for space exploration.
-
-        Huge amout of people leave earth looking
-        for a new life
-
-        Space Trading becomes a very popular
-        occupation
-
-        You were once on a space caravan with your
-        family
-
-        Space Pirates attacks your caravan
-
-        Pirates killed your parents in the attack
-        and you are injured badly
-
-        A scientist fixes you up and gives you
-        the name of "XEON"
-
-        Xeon is set out to clean the galaxy
-         of space pirates
-
-        """
-
-        # TODO: Move this to a txt file.
-        """
-        Some story lore
-
-        Xeon wants to clean the galaxy of space pirates.
-
-        Xeon and the scientist create an organisation to fight pirates. (Unimplemented story says hi)
-
-        Xeon's armor allows him to absorb life force from enemies to heal himself. (Unimplemented `Enemies should drop health pickups` says Hi)
-
-        Xeon can fight bosses and absorb their skills. (Megaman says Hi)
-
-        Xeon wants to fight the king of pirates at the end. (Unimplemented Boss fight says Hi)
-
-        After Xeon wins the fight the organization continues on as a private security firm. (Unimplemented Endless mode says Hi)
-        """
+        text = self.intro_text
         print_log("STARTED INTRO")
         self.scroll_text(text)
+        self.intro_sound.fadeout(1000)
+        self.clock.tick(2)
         print_log("FINNISHED INTRO")
 
     @debug
@@ -481,10 +446,11 @@ class Game:
         Also kills all sprites generated from the last round to improve performance."""
         if self.running:
             self.kill_sprite_group(self.all_sprites)
-            self.screen.fill(BG_COLOR)
-            self.draw_text("Game Over", 64, (WHITE, BLACK), WIDTH/2, HEIGHT/4)
-            self.draw_text("Press a key to play again.", 22,
-                           (WHITE, BLACK), WIDTH/2, HEIGHT * 3/4)
+            self.screen.fill(BLACK)
+            self.draw_text("Game Over", 64, (WHITE, RED), WIDTH/6, HEIGHT/4)
+            self.draw_text("XEON will not be able to avenge his parents", 64, (WHITE, RED), WIDTH/7, HEIGHT/3)
+            self.draw_text("Press a key to play again", 22,
+                           (WHITE, RED), WIDTH/6, HEIGHT * 3/4)
             pg.display.flip()
             self.wait_for_key()
 
@@ -515,7 +481,7 @@ class Game:
         for index, line in enumerate(splitted):
             line = line.strip()
             text_surface, text_surface_rect = self.draw_text(
-                line, 32, (WHITE, BLACK), x=0, y=32*index, surface=complete_surface)
+                line, 32, (WHITE, RED), x=0, y=32*index, surface=complete_surface)
             text_lines.append((text_surface, text_surface_rect))
 
         complete_surface_rect = complete_surface.get_rect()

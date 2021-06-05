@@ -40,6 +40,7 @@ COIN_SPRITESHEET = os.path.join(ASSETS_PATH, "coins_spritesheet.png") # made wit
 HEALTHDROP_SPRITESHEET = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.png") # made with Texture Packer
 BULLETS_SPRITESHEET = os.path.join(ASSETS_PATH, "bullets_normal.png") # made with Texture Packer
 HEALTHDROP_XML_DATA = os.path.join(ASSETS_PATH, "healthdrop_spritesheet.xml") # made with Texture Packer
+MAIN_MENU_BG = os.path.join(ASSETS_PATH, "main_menu_background.png")
 
 # Paths to maps
 LEVEL1_PATH = os.path.join(MAP_PATH, "level1.tmx") # made with Tiled
@@ -53,12 +54,18 @@ PLATFORMER_BG_SOUND_PATH = os.path.join(SOUNDS_PATH, "platformer-bg.mp3")
 FONT_ARCADE_IN = os.path.join(FONT_PATH, "8-bit Arcade In.ttf")
 FONT_ARCADE_OUT = os.path.join(FONT_PATH, "8-bit Arcade Out.ttf")
 
+# Path to texts
+INTRO_TEXT = os.path.join(GAME_PATH, "intro.txt")
+
+
 
 # Window stats
 WIDTH = 1024
 HEIGHT = 800
 TITLE = "Xeon - The Unfinished game"
 FPS = 60
+MUSIC_ON = True # turn of for a quiter experince :)
+MASTER_SOUND = 0.3 # can be between 0.0 and 1.0
 
 
 # NOTE: Not being used anymore. using Font_Arcade instead.
