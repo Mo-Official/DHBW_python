@@ -36,6 +36,14 @@ class TiledMap:
     https://www.youtube.com/watch?v=QIXyj3WeyZM
     """
     def __init__(self, filename):
+        """
+        Tests
+        -----
+        * not passing a correct directory
+        * not passing a string
+        * missing variables
+        * pytmx not imported
+        """
         try:
             self.tmxdata = pytmx.load_pygame(filename, pixelalpha=True)
             self.width = self.tmxdata.width * self.tmxdata.tilewidth
@@ -47,7 +55,12 @@ class TiledMap:
 
 
     def render(self, surface:Surface):
-        """renders the tiles from the Tiledmap on a given surface."""
+        """renders the tiles from the Tiledmap on a given surface.
+
+        Tests
+        -----
+        * not passing a surface
+        * problem with local function tile_image"""
         tile_image = self.tmxdata.get_tile_image_by_gid
         for layer in self.tmxdata.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
@@ -57,7 +70,13 @@ class TiledMap:
                         surface.blit(tile, (x * self.tmxdata.tilewidth,y * self.tmxdata.tileheight))
 
     def make_map(self) -> Surface:
-        """A Wrapper function that returns a surface of the map."""
+        """A Wrapper function that returns a surface of the map.
+        
+        Tests
+        -----
+        * Problem with creating a surface
+        * problem with render()
+        * missing variables"""
         temp_surface = Surface((self.width, self.height))
         self.render(temp_surface)
         return temp_surface
@@ -71,12 +90,28 @@ class Camera:
     https://www.youtube.com/watch?v=3zV2ewk-IGU
     """
     def __init__(self, width, height):
+        """
+        Parameters
+        ----------
+        width: width of the camera
+        height: height of the camera
+        
+        Tests
+        -----
+        passing negative width
+        passing negative height"""
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
 
     def apply(self, entity:Union[Sprite,Rect]) -> Rect:
-        """Moves the passed entity or rect by the calculated offset in `update()`"""
+        """Moves the passed entity or rect by the calculated offset in `update()`
+        
+        Tests
+        -----
+        * passing an unsupported type of entity
+        * passed sprites without a rect
+        * missing camera rect"""
         if isinstance(entity, pg.sprite.Sprite):
             return entity.rect.move(self.camera.topleft)
         elif isinstance(entity, pg.Rect):
@@ -84,7 +119,13 @@ class Camera:
 
 
     def update(self, target:Sprite):
-        """Calculates the offset of the passed ta"""
+        """Calculates the offset of the passed target
+        
+        Tests
+        -----
+        * missing gloable variables
+        * target not having a rect
+        * missing local variables of the object"""
         x = -target.rect.x + CAM_POINT[0]
         y = -target.rect.y + CAM_POINT[1]
 
