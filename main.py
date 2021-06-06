@@ -122,7 +122,7 @@ class Game:
     - quit()
     """
     # type definitions for asset variables
-    xeon_image_collection: Image_collection
+    xeon_image_collection: ImageCollection
     bullets_spritesheet: Spritesheet
     healthdrop_spritesheet: Spritesheet
     healthdrop_xmldata: ET.ElementTree
@@ -157,7 +157,13 @@ class Game:
 
     @debug
     def __init__(self) -> None:
-        """__init__ methode of game class that starts pygame"""
+        """__init__ methode of game class that starts pygame
+        
+        Tests
+        -----
+        * print_log undefined
+        * pygame not imported
+        * problem with load_data()"""
         print_log("STARTING PYGAME", "STARTUP")
         pg.init()
         mixer.init()
@@ -170,11 +176,17 @@ class Game:
     @debug
     def load_data(self) -> None:
         """A function that wraps all game assets loading calls.
-        Data is stored in game variables."""
+        Data is stored in game variables.
+        
+        Tests
+        -----
+        * print_log() not defined
+        * problem creating Spritesheets
+        * problem creating Image_collections"""
         # load Xeon Spritesheet
         print_log("<game.run>:LOADING ASSETS...")
         print_log("<game.run>:LOADING PLAYER SPRITESHEET")
-        self.xeon_image_collection = Image_collection(XEON_FRAMES)
+        self.xeon_image_collection = ImageCollection(XEON_FRAMES)
 
         print_log("<game.run>:LOADING BULLETS SPRITESHEET")
         self.bullets_spritesheet = Spritesheet(BULLETS_SPRITESHEET)
@@ -206,7 +218,14 @@ class Game:
     def load_map(self, mapName) -> Tuple[TiledMap, Surface, Rect]:
         """Loads a map by providing the map's name.
 
-        The map needs to be inside the ./maps folder and has to be a valid tmx file."""
+        The map needs to be inside the ./maps folder and has to be a valid tmx file.
+        
+        Tests
+        -----
+        * TiledMap() not imported
+        * mapName invalid
+        * mapName doesn't exist
+        """
         new_map = TiledMap(mapName)
         map_image = new_map.make_map()
         map_rect = map_image.get_rect()
@@ -215,7 +234,13 @@ class Game:
     @debug
     def set_map(self, mapName):
         """changes the game map.
-        The passed mapName need to match directory of a valid map inside `./maps`"""
+        The passed mapName need to match directory of a valid map inside `./maps`
+        
+        Tests
+        -----
+        * print_log not defined
+        * problem with load_map()
+        * mapName not a string"""
         print_log("<game.change_map>:loading a new map")
         self.map, self.map_image, self.map_rect = self.load_map(mapName)
         print_log("<game.change_map>:loaded the new map Successfully","SUCCESS")
@@ -225,6 +250,12 @@ class Game:
         """runs code that starts a new game.
 
         This method sets up all objects in the current <game.map:TiledMap>
+
+        Tests
+        -----
+        * print_log() not defined
+        * sprite not imported
+        * Classes from sprite.py and tilemap.py not imported
         """
 
         print_log("<game.new>:STARTING A NEW GAME")
@@ -270,6 +301,12 @@ class Game:
     def run(self) -> None:
         """A function that controls the main game loop.
         Doesn't return anything.
+
+        Tests
+        -----
+        * Missing gloable variables
+        * missing local variables of the object
+        * platformer_bg_sound not imported correctly
         """
         self.playing = True
         if MUSIC_ON:
@@ -287,6 +324,13 @@ class Game:
         """Calls the update method of all game objects.
 
         NOTE: Logic being directly updated in this function shall be later moved to each object's class.
+        
+        Tests
+        -----
+        * problem with update() of a sprite
+        * problem with camera.update where player doesnt have a rect
+        * print_log undefined
+        * sprite from pygame not imported
         """
 
         # Update objects logic
@@ -334,7 +378,13 @@ class Game:
 
 
     def events(self):
-        """Method for controlling the event loop."""
+        """Method for controlling the event loop.
+        
+        Tests
+        -----
+        * pygame not imported as pg
+        * player missing jump_cut() function
+        """
         # Game Loop - Events
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -350,6 +400,12 @@ class Game:
     def draw(self) -> None:
         """ Method for drawing graphics.
         applies the camera's offset and showing the player health bar
+
+        Tests
+        -----
+        * missing gloable variables
+        * camera not able to apply offest to map
+        * camera not able to apply offest to a sprite
         """
         # Game Loop - Draw
         self.screen.fill(BG_COLOR) # might be redundant
@@ -417,7 +473,13 @@ class Game:
 
     @debug
     def show_start_screen(self) -> None:
-        """method that describes how the start screen looks like"""
+        """method that describes how the start screen looks like
+        
+        Tests
+        ------
+        * missing gloable variables
+        * missing local variables of the object
+        * problem with draw_text() or blit()"""
         if MUSIC_ON:
             self.intro_sound.play()
             self.intro_sound.set_volume(MASTER_SOUND)
@@ -432,7 +494,14 @@ class Game:
 
     @debug
     def show_intro_scene(self) -> None:
-        """method that describes how the intro scene looks like"""
+        """method that describes how the intro scene looks like
+        
+        Tests
+        -----
+        * print_log() undefined
+        * missing local varaible "intro_text"
+        
+        """
         text = self.intro_text
         print_log("STARTED INTRO")
         self.scroll_text(text)
@@ -443,12 +512,20 @@ class Game:
     @debug
     def show_over_screen(self) -> None:
         """ Method for describing how the game over screen look like.
-        Also kills all sprites generated from the last round to improve performance."""
+        Also kills all sprites generated from the last round to improve performance.
+        
+        Tests
+        -----
+        * problem with kill_sprite_group()
+        * missing gloable variables
+        * missing local variables
+        * problem with draw_text()
+        """
         if self.running:
             self.kill_sprite_group(self.all_sprites)
             self.screen.fill(BLACK)
             self.draw_text("Game Over", 64, (WHITE, RED), WIDTH/6, HEIGHT/4)
-            self.draw_text("XEON will not be able to avenge his parents", 64, (WHITE, RED), WIDTH/7, HEIGHT/3)
+            self.draw_text("XEON will not be able to avenge his parents", 32, (WHITE, RED), WIDTH/7, HEIGHT/3)
             self.draw_text("Press a key to play again", 22,
                            (WHITE, RED), WIDTH/6, HEIGHT * 3/4)
             pg.display.flip()
@@ -494,7 +571,7 @@ class Game:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     waiting = False
-                    self.playing = False
+                    self.running = False
                 if event.type == pg.KEYUP:
                     waiting = False
 
@@ -506,7 +583,14 @@ class Game:
 
     @debug
     def wait_for_key(self) -> None:
-        """Pauses the game until a key is pressed"""
+        """Pauses the game until a key is pressed
+        
+        Tests
+        -----
+        * missing gloable variables
+        * missing local varibales
+        * pygame not imported as pg
+        """
         waiting = True
         while waiting:
             self.clock.tick(FPS)
@@ -524,6 +608,11 @@ class Game:
         Parameters
         ----------
         group: sprite.Group -> group of sprites to be disposed of
+
+        Tests
+        -----
+        * not passing a sprite group as group
+        * sprite.kill() method is overwritten
         """
         # kill all sprites in a to improve performance
         for sprite in group:
@@ -531,7 +620,12 @@ class Game:
 
     @debug
     def quit(self) -> None:
-        """Quits the game"""
+        """Quits the game
+        
+        Tests
+        -----
+        * pygame not imported as pg
+        """
         # Close Game
         pg.quit()
 

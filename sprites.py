@@ -70,7 +70,7 @@ class Spritesheet:
         return image
 
 
-class Image_collection:
+class ImageCollection:
     """
     Image_collection - A utility class for loading spritesheets as an different images.
     Using this is more expensive than Spritesheet but provides better frames.
