@@ -29,7 +29,7 @@ To customize logging you can change the variables in setting.py
 | LOGGING_TO_CONSOLE | Logs info to the console. |
 | LOGGING_TO_FILE | Logs info to the log.txt |
 | LOG_INFO | Logs additional info |
-| CALLS_DEBUG | Logs function calls where @debug decorator |
+| CALLS_DEBUG | Logs function calls where @debug decorator has been used|
 
 ### Controls:
 | Key | Action |
@@ -43,15 +43,16 @@ To customize logging you can change the variables in setting.py
 
 
 ## Project Description:
-This will be a Sci-fi Spaceshooter/Platformer game developed in pygame, but more effort will be put into the Platformer part.
+This shall be a Sci-fi Spaceshooter/Platformer game developed in pygame, but more effort will be put into the Platformer part.
+(The Spaceshooter has not been implemented)
 
 ### Endless mode
 The Player can choose to play either the Spaceshooter or the Platformer with endless scrolling maps.
-This mode has not been implemented and will not be due to technical limitations.
+(This mode has not been implemented and will not be due to technical limitations.)
 
 ### Story mode
 I would like to add a demo level for the story, with some dialogs.
-This mode has not been implemented fully.
+(This mode has not been implemented fully, because of missing content)
 
 ### Assets:
 I will be using following assets for the project.
