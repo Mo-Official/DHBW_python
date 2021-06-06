@@ -30,6 +30,16 @@ class Spritesheet:
     """Spritesheet - A utility class for loading spritesheets as an entier image."""
     @debug
     def __init__(self, filename) -> None:
+        """
+        Parameters
+        ----------
+        filename: the name of the spritesheet image to be loaded
+
+        Tests
+        -----
+        * not passing a str as filename
+        * passing a filename of a file that doesn't exist
+        * passing a filename with a format that is not supported"""
         self.filename = filename
         self.spritesheet = pg.image.load(filename).convert()
 
@@ -68,6 +78,16 @@ class Image_collection:
 
     @debug
     def __init__(self, filename) -> None:
+        """
+        Parameters
+        ----------
+        filename: the name of the spritesheet image to be loaded
+
+        Tests
+        -----
+        * not passing a str as filename
+        * passing a filename of a file that doesn't exist
+        * passing a filename with a format that is not supported"""
         self.filename = filename
         self.images = self.load_images_from_file(filename)
 
@@ -135,6 +155,13 @@ class Player(sprite.Sprite):
     """
 
     def __init__(self, game, x, y):
+        """
+        Parameters
+        ----------
+        game: the current game
+        x: where to spawn the player
+        y: where to spawn the player
+        """
         super().__init__()
         self.game = game
         # animation variables
@@ -172,9 +199,12 @@ class Player(sprite.Sprite):
     @debug
     def load_images(self):
         """load images form the xeon_image_collecition.
-
-        the loading process is hardcoded and no parameters are pass,
-        so it doesn't need tests."""
+        
+        Tests
+        -----
+        * passing wrong image name to the local load function
+        * passing a none string
+        * missing global variables"""
         load = self.game.xeon_image_collection.get_image
 
         self.standing_frames_r = [
@@ -239,49 +269,38 @@ class Player(sprite.Sprite):
         ]
 
         # flip all frames
-        self.standing_frames_l = [pg.transform.flip(
-            x, True, False) for x in self.standing_frames_r]
-        self.walking_frames_l = [pg.transform.flip(
-            x, True, False) for x in self.walking_frames_r]
-        self.jumping_frames_l = [pg.transform.flip(
-            x, True, False) for x in self.jumping_frames_r]
-        self.standing_shooting_frames_l = [pg.transform.flip(
-            x, True, False) for x in self.standing_shooting_frames_r]
-        self.walking_shooting_frames_l = [pg.transform.flip(
-            x, True, False) for x in self.walking_shooting_frames_r]
-        self.jumping_shooting_frames_l = [pg.transform.flip(
-            x, True, False) for x in self.jumping_shooting_frames_r]
+        self.standing_frames_l = [pg.transform.flip(x, True, False) for x in self.standing_frames_r]
+        self.walking_frames_l = [pg.transform.flip(x, True, False) for x in self.walking_frames_r]
+        self.jumping_frames_l = [pg.transform.flip(x, True, False) for x in self.jumping_frames_r]
+        self.standing_shooting_frames_l = [pg.transform.flip(x, True, False) for x in self.standing_shooting_frames_r]
+        self.walking_shooting_frames_l = [pg.transform.flip(x, True, False) for x in self.walking_shooting_frames_r]
+        self.jumping_shooting_frames_l = [pg.transform.flip( x, True, False) for x in self.jumping_shooting_frames_r]
 
         # Set key color
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.standing_frames_l]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.standing_frames_r]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.standing_shooting_frames_l]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.standing_shooting_frames_r]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.walking_frames_l]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.walking_frames_r]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.walking_shooting_frames_l]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.walking_shooting_frames_r]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.jumping_frames_l]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.jumping_frames_r]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.jumping_shooting_frames_l]
-        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR)
-         for x in self.jumping_shooting_frames_r]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.standing_frames_l]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.standing_frames_r]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.standing_shooting_frames_l]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.standing_shooting_frames_r]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.walking_frames_l]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.walking_frames_r]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.walking_shooting_frames_l]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.walking_shooting_frames_r]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.jumping_frames_l]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.jumping_frames_r]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.jumping_shooting_frames_l]
+        [x.set_colorkey(XEON_SPRITESHEET_KEYCOLOR) for x in self.jumping_shooting_frames_r]
 
     def update_movement_flags(self):
         """updates movement flags so
         it can be used in collision.
-        This function is still buggy. see Issue https://github.com/Mo-Official/DHBW_python/issues/13 for more info"""
+        This function is still buggy. see Issue https://github.com/Mo-Official/DHBW_python/issues/13 for more info
+        
+        Tests
+        -----
+        * keyError for movement_flags
+        * vel not having an x
+        * vel not having a y
+        """
         if self.vel.x//1 > 0:
             self.movement_flags["right"] = True
         elif self.vel.x//1 < 0:
@@ -302,6 +321,10 @@ class Player(sprite.Sprite):
     def update_animation_flags(self):
         """updates movement flags so
         it can be used in animation.
+
+        Tests
+        -----
+        * keyError for movement_flags or animation_flags
         """
         if self.movement_flags["right"] or self.movement_flags["left"]:
             self.animation_flags["walk"] = True
@@ -329,7 +352,15 @@ class Player(sprite.Sprite):
     def move_x(self):
         """moves the player horizontally
         and updates movement flags.
-        This function is still buggy. see Issue https://github.com/Mo-Official/DHBW_python/issues/13 for more info"""
+        This function is still buggy.
+        see Issue https://github.com/Mo-Official/DHBW_python/issues/13 for more info.
+        
+        Tests
+        -----
+        * acc and vel having x
+        * global variable missing
+        * key error for movement_flags
+        """
         # apply equation of motion
         self.acc.x += self.vel.x * PLAYER_FRICTION
         self.vel += self.acc
@@ -345,7 +376,14 @@ class Player(sprite.Sprite):
 
     def move_y(self):
         """moves the player vertically
-        and updates movement flags."""
+        and updates movement flags.
+
+        Tests
+        -----
+        * acc and vel having x
+        * global variable missing
+        * key error for movement_flags
+        """
         # apply equation of motion
         self.movement_flags["up"] = False
         self.movement_flags["down"] = False
@@ -360,7 +398,13 @@ class Player(sprite.Sprite):
         self.rect.midbottom = self.pos
 
     def update(self):
-        """updates the logic of the player object."""
+        """updates the logic of the player object.
+
+        Tests
+        -----
+        * key for dicts
+        * missing global variables
+        """
 
         keyState = key.get_pressed()
 
@@ -382,6 +426,7 @@ class Player(sprite.Sprite):
             self.acc.x = PLAYER_ACC
         self.move_x()
         # apply collision with platforms on the x
+        # TODO: move to a separate function
         platforms = self.game.platforms
         platform_hits = sprite.spritecollide(self, platforms, False)
         if platform_hits:
@@ -412,6 +457,7 @@ class Player(sprite.Sprite):
         self.move_y()
 
         # apply collision with platforms on the y
+        # TODO: move to a separate function
         platforms = self.game.platforms
         platform_hits = sprite.spritecollide(self, platforms, False)
         if platform_hits:
@@ -437,7 +483,14 @@ class Player(sprite.Sprite):
         self.update_animation_flags()
 
     def shot(self):
-        """creats a projectile and sends it off in the direction the player is facing"""
+        """creats a projectile and sends it off in the direction the player is facing
+        Tests
+        -----
+        * Key error
+        * missing variables
+        * problem with Projectile class
+        * passing invalid params to Projectile
+        """
         if not self.animation_flags["face_right"]:
             x_offset = self.rect.left
             y_offset = self.rect.y + self.rect.height//3
@@ -461,7 +514,9 @@ class Player(sprite.Sprite):
 
         Tests
         -----
-        * not passing a number as amount"""
+        * not passing a number as amount
+        * missing globale variables
+        """
         now = pg.time.get_ticks()
         if now - self.last_damge > PLAYER_INVULNERABILITY:
             self.taking_damage = False
@@ -471,7 +526,12 @@ class Player(sprite.Sprite):
             self.last_damge = pg.time.get_ticks()
 
     def jump(self):
-        """"controls when the player is allowed to jump and changes their vertical speed"""
+        """"controls when the player is allowed to jump and changes their vertical speed
+        Tests
+        -----
+        * Missing global variables
+        * missing local variables of the object of the object
+        """
         # jump only if standing on a platform
         # detect two pixels below the player
         self.rect.y += 2
@@ -481,17 +541,34 @@ class Player(sprite.Sprite):
             self.vel.y = PLAYER_JUMP
 
     def jump_cut(self):
-        """Allows for shorter jumps when called"""
+        """Allows for shorter jumps when called
+        
+        Tests:
+        ------
+        * Key error
+        * missing globale variables
+        * missing local variables of the object"""
         if self.animation_flags["jump"]:
             if self.vel.y < PLAYER_JUMP//2:
                 self.vel.y = PLAYER_JUMP//2
 
     def animate(self):
-        """Animates the Object"""
+        """Animates the Object
+
+        Tests
+        -----
+        * key error
+        * missing local variables of the object """
         now = pg.time.get_ticks()
 
         def show_continuous_animation(frame_list):
-            """Loops through the frames list"""
+            """Loops through the frames list
+
+            Tests
+            -----
+            * frame_list not a list
+            * missing local variables of the object
+            """
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(frame_list)
             pos = self.pos
@@ -499,7 +576,12 @@ class Player(sprite.Sprite):
             self.pos = pos
 
         def show_linear_animation(frame_list):
-            """Goes through the frames and stops at the last one."""
+            """Goes through the frames and stops at the last one.
+            
+            Tests
+            -----
+            * frame_list not a list
+            * missing local variables of the object"""
             self.last_update = now
             self.current_frame = min(
                 self.current_frame + 1, len(frame_list) - 1)
@@ -594,6 +676,11 @@ class Projectile(sprite.Sprite):
         x_vel -> vel in the x direction
         faceing_right -> sets the direction of the animation
         shooter -> could be used when animating different kind of shots depending on the shooter
+
+        Tests
+        -----
+        * Passing wrong parametes
+        * problem with load_images()
         """
         super().__init__()
         self.shooter = shooter
@@ -612,7 +699,14 @@ class Projectile(sprite.Sprite):
 
     @debug
     def load_images(self):
-        """loads images from the bullets_spritesheet"""
+        """loads images from the bullets_spritesheet
+
+        Tests
+        -----
+        * passing wrong image name to the local load function
+        * passing a none string
+        * missing global variables
+        """
         MARGIN_RIGHT = 1
         HEIGHT = 7
         WIDTH = 16
@@ -627,7 +721,12 @@ class Projectile(sprite.Sprite):
         [x.set_colorkey(BLACK) for x in self.left_frames]
 
     def animate(self):
-        """animates an object"""
+        """animates an object
+        
+        Tests
+        -----
+        * missing local variable of the object
+        * right_framges and left_frames not being a list of pygame.Surface"""
         now = pg.time.get_ticks()
         if now - self.last_update > 100:
             if self.facing_right:
@@ -648,7 +747,12 @@ class Projectile(sprite.Sprite):
                 self.rect.center = center
 
     def update(self):
-        """updates object logic"""
+        """updates object logic
+
+        Tests
+        -----
+        Problem with animate()
+        missing global variables"""
         self.animate()
         # calculate traveled distance and kill when excided
         self.x_diff = abs(self.init_x_pos - self.rect.x)
@@ -672,7 +776,9 @@ class BaseEnemy(sprite.Sprite):
         Tests
         -----
         * not passing a game object
-        * not passing a correct x and y"""
+        * not passing a correct x and y
+        * missing gloable variables
+        """
         super().__init__()
         # temporary, because i have to format the spritesheet.
         self.image = pg.image.load(os.path.join(
@@ -688,27 +794,15 @@ class BaseEnemy(sprite.Sprite):
         self.game = game
         self.last_shot = pg.time.get_ticks()
 
-    def move(self):
-        """
-        shall Apply the equation of motion to move the sprite on the x-aches
-        """
-        pass
-
-    def jump(self):
-        """
-        shall Apply jumping in neccessary
-        """
-        pass
-
-    def set_path(self):
-        """
-        shall figure out bunch of move instructions needed to get to a certain point
-        """
-        pass
 
     def shot(self):
         """
         Shot a projectile in a certain angle
+        
+        Tests
+        -----
+        * problem with Projectile class
+        * missing variables from game object 
         """
         projectile = Projectile(*self.rect.midleft, -20,
                                 False, self)  # hardcoded for testing
@@ -717,7 +811,14 @@ class BaseEnemy(sprite.Sprite):
         pass
 
     def die(self):
-        """kills an enemy and randomly spawn a healthdrop"""
+        """kills an enemy and randomly spawn a healthdrop
+        
+        Tests
+        -----
+        * random not imported
+        * Problem with HealthDrop class
+        * missing variables from game
+        """
         chance = random.randint(0, 100)
         if chance < 40:
             new_healthdrop = HealthDrop(self.game, *self.rect.topleft)
@@ -727,7 +828,12 @@ class BaseEnemy(sprite.Sprite):
 
     def update(self):
         """
-        Applies gravity, animates and shall determine behavior towards the player
+        updates the logic of the player object.
+
+        Tests
+        -----
+        * missing global variables
+        * missing local variables
         """
         # apply equation of motion
         self.acc = vec(0, PLAYER_GRAVITY)
@@ -746,6 +852,29 @@ class BaseEnemy(sprite.Sprite):
         if now - self.last_shot > random.randint(1500, 3000):
             self.shot()
             self.last_shot = pg.time.get_ticks()
+    
+    # (Not yet implemeted)
+    def move(self):
+        """
+        shall Apply the equation of motion to move the sprite on the x-aches
+
+        
+        """
+        pass
+
+    # (Not yet implemeted)
+    def jump(self):
+        """
+        shall Apply jumping in neccessary
+        """
+        pass
+
+    # (Not yet implemeted)
+    def set_path(self):
+        """
+        shall figure out bunch of move instructions needed to get to a certain point
+        """
+        pass
 
 
 class HealthDrop(sprite.Sprite):
@@ -801,11 +930,22 @@ class HealthDrop(sprite.Sprite):
         [frame.set_colorkey(BLACK) for frame in self.frames]
 
     def animate(self):
-        """animates an object"""
+        """animates an object
+
+        Tests
+        -----
+        * missing local variable of the object
+        * frames not being a list of pygame.Surface
+        """
         now = pg.time.get_ticks()
 
         def show_continuous_animation(frame_list):
-            """loops through the frame_list"""
+            """loops through the frame_list
+            
+            Tests
+            -----
+            * not passing a list
+            * missing variables"""
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(frame_list)
             self.image = frame_list[self.current_frame]
@@ -818,7 +958,12 @@ class HealthDrop(sprite.Sprite):
             show_continuous_animation(self.frames)
 
     def update(self):
-        """updates an object"""
+        """updates an object
+
+        Tests
+        -----
+        * missing function
+        * problem with animate"""
         self.animate()
 
 
